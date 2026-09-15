@@ -1,0 +1,63 @@
+\usepackage[spanish]{babel}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{fancyhdr}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage[table]{xcolor}
+%%%%%%%PAGE LAYOUT
+\usepackage{geometry}
+%\usepackage[showframe]{geometry}%
+%Dimensiones Letter paper 
+\setlength{\paperheight}{27.94cm} %
+\setlength{\paperwidth}{20.59cm}
+\hoffset -0cm                     % Desplazamiento horizontal de todo el contenido (-0.54cm)
+\voffset-0.54cm                      % Desplazamiento vertical de todo el contenido (-0.54cm)
+% Márgenes y dimensiones de la página
+\setlength{\oddsidemargin}{0cm}     	% Margen izquierdo en páginas impares (0cm)
+\setlength{\evensidemargin}{0cm}    	% Margen derecho en páginas pares (0cm)
+\setlength{\topmargin}{-24pt}				% Margen superior (-24pt, aproximadamente -0.85cm)
+\setlength{\textheight}{22.94cm}		% Altura del área de texto (22.94cm)
+\setlength{\textwidth}{15.51cm}     	% Ancho del área de texto (15.51cm) para una margen izuierda y derecha iguales20.59-2*2.54
+\setlength{\marginparsep}{0.25cm}    % Espacio entre texto y notas al margen (0.25cm)
+\setlength{\marginparwidth}{2.cm}    % Ancho de las notas al margen (2cm)
+
+% Encabezado y pie de página
+\setlength{\headsep}{24pt}           % Espacio entre encabezado y texto (12pt, aproximadamente 0.42cm)
+\setlength{\headheight}{14pt}        % Altura del encabezado (14pt; fancyhdr exige >= 13.07pt con este preámbulo)
+\setlength{\footskip}{1.cm}           % Espacio entre texto y pie de página (1.5cm)
+%%%%%%%%%%%%%%%%%Colores
+
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\DeclareFixedFont{\zcal}{T1}{pzc}{m}{it}{10pt}
+\DeclareFixedFont{\helv}{T1}{phv}{m}{n}{10pt}
+%%%%%%%%%%%%%Page Style
+\pagestyle{fancy}
+\fancyfoot{}%
+\fancyfoot[R]{\thepage}
+%\fancyfoot[RO]{\includegraphics[scale=0.025]{LogoUV}}
+%\fancyfoot[LE]{\includegraphics[scale=0.025]{LogoUV}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{setspace}
+\decimalpoint
+
+\usepackage{multicol}
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,      
+	urlcolor=cyan,
+	pdftitle={EdwinLoaiza doc},
+	pdfpagemode=FullScreen,
+}
+
+\urlstyle{same}
+\usepackage{apacite}
+

@@ -1,0 +1,18 @@
+# Repo público — solo la versión de estudiante de PREDICO.
+# Estrategia "ignorar todo, permitir explícitamente": el documento del
+# instructor (Solucion_de_Problemas_PREDICO.tex), mensajes/ (correspondencia
+# Claude/Antigravity), CLAUDE.md/AGENTS.md/MENSAJE_ANTIGRAVITY.md, Despedida/
+# y cualquier archivo nuevo quedan fuera por defecto — nunca se versionan a
+# menos que se agreguen explícitamente aquí.
+*
+!.gitignore
+!README.md
+!Solucion_de_Problemas_PREDICO_Estudiante.tex
+!Solucion_de_Problemas_PREDICO_Estudiante.pdf
+!referencias.bib
+!encabezado.tex
+!theme/
+!theme/pdoc.tex
+!Imagenes/
+!Imagenes/logos/
+!Imagenes/logos/RojoTransparenteUV.png

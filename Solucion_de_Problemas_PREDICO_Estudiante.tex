@@ -1,0 +1,1552 @@
+
+\documentclass[8pt]{article}
+\input{theme/pdoc}
+% xcolor ya cargado por pdoc.tex con opción [table]
+\usepackage{enumerate}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,arrows.meta,positioning}
+\graphicspath{ {./Imagenes/} {./Imagenes/logos/}{./Imagenes/banner/}{./Figuras/}}
+
+%% ─── Control de figuras ────────────────────────────────────────────────────
+%% Cambiar \figurasfalse → \figurastrue cuando las figuras estén disponibles.
+%% Uso: \figplaceholder[ancho]{alto}{nombre_archivo_sin_extension}
+\newif\iffiguras
+\figurasfalse
+\newcommand{\figplaceholder}[3][0.82\linewidth]{%
+  \iffiguras
+    \begin{center}\includegraphics[width=#1]{#3}\end{center}
+  \else
+    \begin{center}
+    \fbox{\begin{minipage}[c][#2][c]{#1}
+      \centering\color{gray}\small
+      \textit{[Figura pendiente:\ \texttt{\detokenize{#3}}]}
+    \end{minipage}}
+    \end{center}
+  \fi
+}
+
+%% ─── Colores PREDICO ───────────────────────────────────────────────────────
+%% Macros compatibles con modo texto Y modo matemático.
+%% En texto: \dato{\textbf{símbolo}}  En matemática: $\dato{v_0}$
+\definecolor{colDatos}{RGB}{0,140,0}        % Verde  → Datos (conocidos)
+\definecolor{colIncog}{RGB}{180,0,0}        % Rojo   → Incógnitas
+\definecolor{colCond}{RGB}{0,0,200}         % Azul   → Ecuaciones de condición
+\newcommand{\dato}[1]{\textcolor{colDatos}{#1}}
+\newcommand{\incog}[1]{\textcolor{colIncog}{#1}}
+\newcommand{\cond}[1]{\textcolor{colCond}{#1}}
+
+%% ─── TODO ───────────────────────────────────────────────────────────────────
+%% Mismo patrón que en tus otros documentos (p.ej. paperv1.tex, quantum_light_notes.tex):
+%% comando simple, sin depender del paquete todonotes.
+\newcommand{\todo}[1]{\textcolor{orange}{[\textbf{TODO:} #1]}}
+
+\begin{document}
+\input{encabezado}
+\centerline{\Large La solución de problemas en Física como forma de pensar}
+\centerline{\large Estrategia, táctica y criterio}
+\centerline{\normalsize\it Notas para estudiantes}
+\bigskip
+%%%%%%%%%%% Final de encabezado
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+{\small\tableofcontents}
+\newpage
+
+% ═══════════════════════════════════════════════════════════════════════════
+\section*{Introducción}
+% ═══════════════════════════════════════════════════════════════════════════
+
+{\small
+\begin{flushright}
+	\zcal
+	``
+	{\it La ciencia es un modo de pensar} mucho más que un conjunto de conocimientos.\\
+	Su objetivo es averiguar cómo funciona el mundo, buscar qué regularidades puede haber,\\
+	penetrar en las conexiones de las cosas ---desde las partículas subnucleares,\\
+	que pueden ser los constituyentes de toda la materia, hasta los organismos vivos,\\
+	la comunidad social humana, y de ahí al cosmos en su conjunto.
+	''\\
+	Carl Sagan \cite{Sagan1979}.
+\end{flushright}
+}
+
+\medskip
+Estas notas no son un resumen de fórmulas. Son un intento de enseñar algo más difícil y más duradero: una {\bf forma de pensar}.
+
+Un curso de Física para carreras no científicas no tiene como propósito central que el estudiante recuerde las ecuaciones cinemáticas cinco años después de graduarse. Tiene un propósito más ambicioso y más útil: que el estudiante aprenda a {\it modelar} situaciones, a identificar lo que es relevante y descartar lo que no lo es (la distinción central entre cómo organiza el conocimiento un experto y cómo lo organiza un novato \cite{Mestre2020}), a formular preguntas con precisión, a construir argumentos que se sostengan por su propia lógica, y a distinguir una conclusión bien fundamentada de una que solo parece razonable. Esas capacidades no se quedan en el laboratorio ni en el salón de clase: acompañan al profesional, al ciudadano y a la persona en cualquier dominio donde haya que tomar decisiones a partir de evidencia incompleta.
+
+La física es el campo donde estas habilidades se entrenan con especial rigor porque sus leyes son precisas, sus predicciones son verificables y sus argumentos deben sostenerse ante la realidad experimental. Pero el entrenamiento tiene un radio de acción mucho más amplio. Un estudiante que sabe construir un argumento físico completo, coherente, consistente y deducido de principios, sabe también evaluar con esa misma exigencia las afirmaciones que circulan en la vida pública: la eficacia de un medicamento no probado, la fiabilidad de una fuente de información, la solidez de una política basada en datos, o la validez de una teoría que contradice siglos de observación sistemática. En este sentido, razonar bien en física es {\it también} un acto cívico.
+
+La urgencia de esta idea la expresó Sagan en una de sus últimas entrevistas \cite{Sagan1996video}:
+
+\begin{quote}
+{\small\it
+``Hemos creado una sociedad basada en Ciencia y Tecnología en la cual nadie sabe nada sobre Ciencia y Tecnología. Y esta mezcla inflamable de ignorancia y poder, tarde o temprano explotará en nuestras caras. [\ldots] La ciencia es más que un cuerpo de conocimientos. Es una forma de pensar. Una forma escéptica de interrogar al universo, con pleno entendimiento de la falibilidad humana. Si no somos capaces de hacer preguntas escépticas, de interrogar a aquellos que nos dicen que algo es verdad, ser escépticos de aquellos con autoridad, entonces estamos a merced del próximo charlatán, político o religioso que aparezca deambulando.''}
+\end{quote}
+
+\noindent La ignorancia sobre cómo funciona la ciencia tiene un costo que va mucho más allá del aula: se traduce en vulnerabilidad política. Aprender a razonar con rigor en el salón de clase es una forma de blindarse contra esa vulnerabilidad.
+
+\medskip
+\noindent{\bf Lo que encontrarás en estas notas.}
+
+\medskip
+El documento está organizado alrededor de seis tipos de tarea que aparecen en el curso de Física: ejercicios, problemas, preguntas conceptuales, análisis experimental, incertidumbre y medición, y diseño o síntesis. La distinción entre los dos primeros no es cosmética. Paul Zeitz la formula con precisión: un {\bf ejercicio} es una pregunta que se resuelve mecánicamente, aun si es laboriosa, porque la técnica ya se conoce; un {\bf problema} es una pregunta que no se puede resolver de inmediato porque primero hay que descubrir {\it qué} técnica usar \cite{Zeitz2006}. Y esa frontera no es fija: un problema lo es solo en relación con la experiencia de quien lo enfrenta: lo que hoy exige buscar la ruta, con suficiente práctica se ejecuta de memoria \cite{Zeitz2006}. Esta misma idea reaparecerá, con otro nombre, cuando se desarrollen los Tipos~1 y~2 más adelante.
+
+\medskip
+Para cada tipo se desarrolla una {\it táctica} (una forma estructurada de abordarlo) inscrita dentro de una {\it estrategia} general de cuatro fases que aplica a todos, y que retoma, con una fase final ampliada, el esquema clásico de Pólya \cite{Polya1945}: {\bf A.} Entender el problema, {\bf B.} Concebir un plan, {\bf C.} Ejecutar el plan, y {\bf D.} Revisión, reflexión y horizontes.
+
+\medskip
+{\bf PREDICO} (el nombre resume sus siete elementos: Parafraseo, Representación, Ecuaciones relevantes, Datos, Incógnitas, Condiciones y Objetivo, desarrollados en detalle en la Sección~2) es la táctica para la Fase~A en los Tipos~1 y~2, donde la respuesta es un cálculo.
+
+\medskip
+En los Tipos~3 y~4, en cambio, la respuesta no es un número sino un argumento, y ahí PREDICO no aplica directamente. El criterio de calidad correspondiente es {\bf 3C+D}, que exige que todo argumento físico sea {\it Completo, Coherente, Consistente} y {\it Deducido} (de las leyes en una pregunta conceptual, de las observaciones en un análisis experimental). PREDICO y 3C+D son, en ese sentido, dos tácticas hermanas: una para la ruta deductiva-numérica, otra para la ruta argumentativa.
+
+\medskip
+Hay una tercera dirección, la del {\bf Tipo~6}: en vez de partir de datos hacia una incógnita, se parte de un objetivo hacia los datos que hay que decidir. Ahí PREDICO no se abandona: se recorre en sentido inverso, como se explica en la Sección~7.
+
+\medskip
+Estos términos, estrategia y táctica, no son exclusivos de la física, ni siquiera de la ciencia. Su origen es militar: {\it strategós} es el arte de conducir un ejército; {\it taktiké}, el arte de disponer las tropas sobre el terreno. Desde ahí se extendieron a cualquier dominio donde haya que actuar con un propósito bajo incertidumbre.
+
+\medskip
+Dos ejemplos contemporáneos bastan para ilustrarlo. La planeación empresarial distingue rutinariamente decisiones {\it estratégicas} (de largo alcance, costosas de revertir) de decisiones {\it tácticas} (de ejecución, ajustables sobre la marcha). Y en el terreno académico, Paul Zeitz organiza con exactamente la misma tríada --- estrategia, táctica, herramienta--- el arte de resolver problemas de matemáticas de competencia, como se retoma más adelante en estas notas \cite{Zeitz2006}.
+
+\medskip
+Mario Benedetti escribió un poema llamado precisamente \textit{Táctica y Estrategia} donde usa estos mismos términos para hablar del amor \cite{Benedetti1986}. Que la misma tríada sirva para conducir un ejército, planear una empresa, resolver un problema de olimpiada matemática y describir cómo se construye una relación humana revela algo real: son categorías universales del pensamiento estratégico.
+
+\medskip
+Pero el poema hace algo que ningún ejemplo técnico logra por sí solo: revela, con una economía de palabras que estas notas no pueden igualar, el propósito último detrás de toda estrategia, que no es ganar ni resolver sino, en palabras de Benedetti, {\it que un día me necesites}. Vale la pena buscarlo y leerlo completo antes de seguir: el resto de este documento, táctica tras táctica y herramienta tras herramienta, se entiende mejor a la luz de esa última línea.
+
+\medskip
+El objetivo a largo plazo es que, con la práctica, internalices las tácticas hasta el punto en que ya no necesites consultarlas como recetas. A eso le llamamos {\bf criterio}: la capacidad de juzgar con precisión antes de calcular, de reconocer el esquema de un problema desde el enunciado, de sentir cuándo un resultado no puede ser correcto. El criterio no se transmite; se construye problema a problema.
+
+
+\medskip
+\noindent{\bf Una nota sobre cómo leer este documento.}
+
+\medskip
+Este documento está construido sobre preguntas, no sobre respuestas. PREDICO es, en el fondo, una lista de preguntas que te haces a ti mismo al enfrentar un problema. Los Horizontes son preguntas abiertas que el problema deja sin responder. El Reflexionar hace lo mismo con tu propia solución ya obtenida: en vez de cerrar con una conclusión definitiva y pasar al siguiente ejercicio, termina preguntándote {\it ¿lo vi antes de calcular? ¿qué me costó más? ¿por qué elegí esta condición y no otra?}
+
+No es la pregunta retórica que confirma lo que ya sabías, sino la pregunta socrática: la que incomoda, la que revela una suposición oculta, la que te obliga a justificar lo que dabas por obvio. Quien aprende a hacerse las preguntas correctas no depende de que alguien más le dé las respuestas.
+
+\medskip
+Ninguna de estas preguntas busca, en el fondo, una respuesta correcta y ya: buscan que aprendas a hacértelas solo, mucho después de haber olvidado el enunciado de este problema en particular. Ese hábito, preguntarte antes de que alguien más tenga que preguntarte, es, más que PREDICO mismo, lo que estas notas persiguen en última instancia: no la táctica, sino el criterio que queda cuando la táctica ya no hace falta.
+
+% ═══════════════════════════════════════════════════════════════════════════
+\section{Solución de problemas}
+% ═══════════════════════════════════════════════════════════════════════════
+
+{\small
+\begin{flushright}
+	\zcal
+ ``
+ Un gran descubrimiento resuelve un gran problema, pero en la solución de todo problema, \\
+  hay un cierto descubrimiento. El problema que se plantea puede ser modesto;  \\
+  pero si  pone a prueba la curiosidad que induce a poner en juego todas\\
+  las facultades inventivas, si se resuelve por métodos propios,\\
+  se puede experimentar el encanto del descubrimiento\\
+  y el goce del triunfo.
+ ''\\
+G. Pólya \cite{Polya1945}, Prefacio.
+\end{flushright}
+}
+% ═══════════════════════════════════════════════════════════════════════════
+
+{\it La solución de problemas} es una de las actividades más utilizadas para evaluar el nivel de comprensión de {\it contenidos conceptuales} y {\it contenidos procedimentales}, tanto en educación superior como en la básica.
+
+Resolvemos problemas diariamente: en el hogar, en el trabajo, en actividades recreativas, en la escuela y en la universidad. Lo que tienen en común la resolución de un conflicto familiar y la determinación de las condiciones de estabilidad de una estructura es que en ambos casos nos enfrentamos a una situación que exige tomar decisiones a partir de un análisis riguroso. Lo que los diferencia no es solo el contexto, sino los principios que orientan el razonamiento: principios morales en un caso, leyes físicas en el otro.
+
+En su obra \textit{Cómo plantear y resolver problemas}, George Polya identifica lo que denomina {\it las operaciones mentales típicamente útiles en la solución de un problema}: comprender el problema, concebir un plan, ejecutar el plan y revisar la solución propuesta \cite{Polya1945}. Este esquema, lejos de ser un conjunto de normas rígidas, es un marco perfectible, contextualizable y falible que coloca en el centro el razonamiento, el cuestionamiento constante y el entrenamiento sistemático.
+
+Lo que queda claro es que la técnica del ensayo-error, o la ausencia de una estrategia clara, es el peor camino frente a un problema. Resolver problemas requiere entrenamiento en el análisis, la asociación, la síntesis, la particularización y la generalización.
+
+La solución de problemas exige, entre otras cosas: conocimiento de los hechos y procedimientos del área, reconocimiento de {\it esquemas} (tipos de problemas que se repiten en diferentes contextos y que se abordan con tácticas conocidas) y una conciencia creciente sobre el propio proceso de resolución.
+
+\subsection*{Seis tipos de tarea en Física}
+
+La solución de problemas no es una actividad uniforme. Según la naturaleza de la pregunta y la dirección del razonamiento que exige, distinguimos seis tipos de tarea con características propias. Esta distinción no es cosmética: determina la táctica adecuada. Abordar un ejercicio con la profundidad de un problema es ineficiente; abordar una pregunta conceptual con herramientas de cálculo es directamente un error de diagnóstico.
+
+\medskip
+Los primeros cinco comparten una misma dirección de fondo: son tareas de {\it análisis}, que parten de información dada (un dato, una observación, una ley) y exigen deducir o inferir algo a partir de ella. El sexto invierte esa dirección: es una tarea de {\it síntesis}, que parte de un objetivo o una especificación para construir un sistema que la satisfaga. Herbert Simon, fundador de esta distinción como objeto de estudio propio, la formula así: las ciencias naturales explican lo que existe; las {\it ciencias de lo artificial} (entre ellas, la ingeniería) se ocupan de lo que {\it debería ser}, de cómo construir artefactos que alcancen metas dentro de un entorno \cite{Simon1996}. Diseñar un péndulo con un período dado, proponer un circuito que limite la corriente a un valor específico, plantear un experimento que alcance cierta precisión: en ninguno de estos casos hay una única respuesta correcta que deducir. Hay, en cambio, una familia de soluciones válidas que compiten en eficiencia, costo o simplicidad, y la tarea exige juicio de compromiso además de cálculo correcto. Quienes usan este documento serán, en su mayoría, futuros ingenieros, y por eso el sexto tipo se desarrolla aquí, aunque con menor profundidad que los otros cinco: es, deliberadamente, un primer contacto con una forma de razonar que sus cursos posteriores de diseño desarrollarán con mucho más detalle.
+
+\medskip
+\noindent{\bf [1] Ejercicio.}
+Un ejercicio es una tarea cuya ruta de solución es reconocible de forma relativamente directa: la fórmula que aplica está identificada, los datos son explícitos y el procedimiento se reduce a una secuencia clara de pasos. Esto no significa que sea trivial ni que no requiera proceso: aún exige identificar el contexto, extraer datos con sus unidades, formular la condición y verificar el resultado. La complejidad es menor y la ruta es clara, pero la estructura de análisis no desaparece: se aligera.
+
+Los ejercicios cumplen una función pedagógica específica: son el espacio donde se consolidan las herramientas y se automatiza su uso, liberando capacidad cognitiva para los problemas más complejos. Un músico practica escalas no porque las escalas sean música, sino porque sin ellas la música no fluye. La táctica para un ejercicio es una versión {\it tácita} de PREDICO: los mismos elementos, con menor profundidad de elaboración.
+
+\medskip
+\noindent{\bf [2] Problema.}
+Un problema demanda razonamiento extendido: no existe una ruta evidente al inicio, las condiciones deben ser identificadas y relacionadas, y con frecuencia aparecen incógnitas intermedias que el enunciado no solicita directamente. La frontera entre ejercicio y problema no es fija: depende del nivel de entrenamiento del estudiante. Lo que hoy es un problema, mañana puede ser un ejercicio: esa transición es la señal más concreta de que el criterio está creciendo. La táctica es PREDICO completo, en toda su profundidad, seguido de las cuatro fases de ejecución.
+
+\medskip
+\noindent{\bf [3] Pregunta conceptual.}
+Una pregunta conceptual no pide un número: pide una {\it explicación}. La respuesta es un {\bf argumento}: una cadena de razonamiento que parte de una ley o principio físico y llega a una conclusión a través de pasos lógicos explícitos. El razonamiento es {\it deductivo}: va de la ley hacia la situación concreta.
+
+Todo argumento físico válido debe satisfacer cuatro criterios de calidad:
+\begin{itemize}
+    \item {\bf Completo}: ningún paso está ausente; cada afirmación está respaldada.
+    \item {\bf Coherente}: cada paso se sigue necesariamente del anterior, sin saltos lógicos.
+    \item {\bf Consistente}: la conclusión no contradice ningún otro principio físico conocido.
+    \item {\bf Deducido de las leyes}: la conclusión se deriva de principios físicos, no de la intuición ni del sentido común sin respaldo.
+\end{itemize}
+
+Un argumento que nomina la ley correcta pero no la aplica explícitamente a la situación concreta no es {\it coherente}. Un argumento que llega a la conclusión correcta saltándose pasos no es {\it completo}. Ambos son respuestas deficientes, aunque el resultado sea verdadero.
+
+\medskip
+\noindent{\bf [4] Análisis experimental.}
+El análisis experimental comparte con la pregunta conceptual la exigencia de un argumento riguroso, pero su naturaleza epistemológica es opuesta: el razonamiento es {\it inductivo}. Se parte de datos observacionales (una tabla, una gráfica, una serie de mediciones) y se infieren conclusiones sobre el comportamiento del sistema.
+
+Los mismos cuatro criterios de calidad aplican, pero el cuarto cambia de fuente:
+\begin{itemize}
+    \item {\bf Completo, Coherente, Consistente}: igual que en el Tipo 3.
+    \item {\bf Deducido de las observaciones}: la conclusión debe emerger de los datos, no de lo que el estudiante ya cree teóricamente. Proyectar sobre los datos una conclusión decidida de antemano no es análisis: es confirmación de sesgo.
+\end{itemize}
+
+Dentro de esta misma dirección inductiva hay, sin embargo, dos situaciones distintas. A veces la teoría ya entrega la forma funcional completa (como en la caída libre, donde $h=\tfrac{1}{2}gt^2$ se deriva por completo de la Segunda Ley) y el experimento sirve para {\bf verificar y calibrar}: confirmar el modelo y extraer el parámetro que faltaba. Otras veces la teoría solo restringe {\it parcialmente} la forma del modelo (el análisis dimensional aplicado al péndulo predice $T^2 \propto L$ sin derivar la constante de proporcionalidad) y el experimento tiene que {\bf confirmar la relación misma}, no solo calibrar un número. La Sección~5 desarrolla el primer caso en detalle y dedica una nota aparte al segundo.
+
+La teoría conocida no desaparece del análisis experimental: entra para acotar {\it qué modelos vale la pena poner a prueba}, y entra otra vez al final, como contraste, para verificar si las conclusiones son consistentes con la física establecida. Lo que la teoría no puede hacer es decidir de antemano {\it cuál} conclusión se va a encontrar en los datos.
+
+\medskip
+\noindent{\bf [5] Incertidumbre y medición.}
+``Cualquier medida que toméis sin saber cuál es su imprecisión carece de significado'', advierte Walter Lewin \cite{Lewin2011}. Toda medición física es imprecisa. Esta afirmación no es una simple advertencia: describe una propiedad constitutiva de la física experimental. La incertidumbre aparece en los tipos 1--4 como elemento siempre presente: cada dato tiene un valor y una incertidumbre asociada, y cada resultado hereda esa incertidumbre a través de los cálculos.
+
+Pero hay una clase de tarea donde la incertidumbre no es el contexto sino el {\bf tema principal}: problemas en los que la pregunta no es qué valor tiene una magnitud, sino {\it con qué precisión puede conocerse}, o cómo debe diseñarse una medición para alcanzar una precisión objetivo. En estos casos el razonamiento físico es relativamente simple; el desafío es el análisis metrológico. Y ese desafío es, en un sentido preciso, distinto de los cuatro anteriores: mientras los Tipos 1--4 razonan enteramente dentro de la física (leyes, condiciones, observaciones), el Tipo 5 exige herramientas cuyo fundamento no es físico sino {\bf estadístico y probabilístico}: la propagación de incertidumbre es álgebra de varianzas, el criterio de compatibilidad es un juicio sobre intervalos, y la resolución de un instrumento es un concepto de metrología, no de mecánica ni de electromagnetismo. Este tipo de tarea requiere, en consecuencia, su propia táctica, centrada en la identificación de fuentes de error, la propagación de incertidumbres y la interpretación del resultado a la luz de la precisión alcanzada.
+
+\medskip
+\noindent{\bf [6] Diseño y síntesis.}
+Un problema de diseño no entrega los datos: pide construir el sistema que los producirá. Se conoce el {\bf objetivo} (un período, una corriente máxima, una precisión) y se debe decidir qué parámetros, dentro del espacio de opciones disponible, lo alcanzan. El razonamiento no es deductivo ni inductivo: es {\it constructivo}. No existe, en general, una única solución correcta: existe una familia de soluciones válidas, y una fase adicional de evaluación (costo, simplicidad, robustez, disponibilidad de materiales) que elige entre ellas. Esta tarea recorre PREDICO en sentido inverso: en vez de partir de Datos (D) hacia una Incógnita (I), parte de un Objetivo (O) hacia los Datos que hay que decidir. La física que hace falta suele ser simple; lo que exige entrenamiento es la disciplina de reconocer cuándo un problema no tiene una sola respuesta, y de justificar por qué se eligió una solución particular dentro de las que funcionan.
+
+\bigskip
+\begin{center}
+\begin{tikzpicture}[
+  decision/.style={diamond, aspect=2.6, draw, thick, fill=blue!4, text width=3.7cm, text centered, inner sep=1.5pt, font=\scriptsize},
+  outcome/.style={rectangle, rounded corners, draw, thick, text width=3.3cm, text centered, inner sep=3pt, font=\scriptsize\bfseries},
+  lbl/.style={font=\tiny, fill=white, inner sep=1pt},
+  arr/.style={-{Stealth[length=2mm]}, thick},
+  node distance=7mm and 9mm
+]
+\node[decision] (q1) {¿Partes de un \textbf{objetivo} hacia los parámetros que hay que decidir, en vez de partir de datos ya dados?};
+\node[outcome, fill=green!12, right=of q1] (t6) {[6] Diseño y síntesis};
+\draw[arr] (q1) -- node[lbl] {Sí} (t6);
+
+\node[decision, below=of q1] (q2) {¿El tema central es \textbf{con qué precisión} se conoce o mide un valor (incertidumbre, propagación, compatibilidad), no el valor mismo?};
+\draw[arr] (q1) -- node[lbl] {No} (q2);
+\node[outcome, fill=purple!12, right=of q2, xshift=8mm] (t5) {[5] Incertidumbre y medición};
+\draw[arr] (q2) -- node[lbl] {Sí} (t5);
+
+\node[decision, below=of q2] (q3) {¿Lo que piden es un \textbf{argumento}, no un número?};
+\draw[arr] (q2) -- node[lbl] {No} (q3);
+
+\node[decision, right=of q3, xshift=8mm] (q3b) {¿El argumento parte de una \textbf{ley} hacia la situación, o de \textbf{datos/observaciones} hacia una conclusión?};
+\draw[arr] (q3) -- node[lbl] {Sí} (q3b);
+\node[outcome, fill=orange!15, above=of q3b, yshift=-2mm] (t3) {[3] Pregunta conceptual};
+\node[outcome, fill=teal!15, below=of q3b, yshift=2mm] (t4) {[4] Análisis experimental};
+\draw[arr] (q3b) -- node[lbl] {Ley} (t3);
+\draw[arr] (q3b) -- node[lbl] {Datos} (t4);
+
+\node[decision, below=of q3] (q4) {¿La \textbf{ruta de solución} (qué fórmula, qué pasos) es reconocible de inmediato al leer el enunciado?};
+\draw[arr] (q3) -- node[lbl] {No} (q4);
+\node[outcome, fill=gray!15, right=of q4, xshift=8mm] (t1) {[1] Ejercicio};
+\draw[arr] (q4) -- node[lbl] {Sí} (t1);
+
+\node[outcome, fill=blue!12, below=of q4] (t2) {[2] Problema};
+\draw[arr] (q4) -- node[lbl] {No} (t2);
+\end{tikzpicture}
+\end{center}
+
+Cada tipo demanda una táctica específica. Los seis se desarrollan en las secciones siguientes.
+
+\medskip
+\noindent{\small\it Es natural, llegados a este punto, preguntarse si algunas tareas frecuentes (estimaciones estilo Fermi, problemas de optimización, comparación de modelos) constituyen tipos adicionales. No lo son: cada una es una variación dentro de un tipo ya descrito aquí, no una dirección de razonamiento nueva.}
+
+\medskip
+\noindent Usaremos tres términos, {\it estrategia, táctica} y {\it herramienta}, para describir tres niveles en la solución de problemas, la misma jerarquía que Paul Zeitz identifica como el eje organizador de la resolución de problemas matemáticos y que aquí se adapta a la Física \cite{Zeitz2006}. La {\it estrategia} es el plan general: el camino que se decide seguir para abordar el problema. La {\it táctica} es la forma de resolver los obstáculos concretos que aparecen en ese camino. La {\it herramienta} es la técnica específica empleada en cada tarea particular. Frente a un problema, el estudiante debe ser capaz de operar en los tres niveles: definir la estrategia, adaptarla tácticamente y usar con destreza las herramientas disponibles.
+
+\medskip
+\noindent Zeitz \cite{Zeitz2006} aporta también dos preguntas que se integran de forma natural a la fase de {\bf Concebir un plan} (Fase B, Sección~2): el {\bf paso crucial} (\textit{crux move}) es la sub-tarea más difícil de todo el problema: una vez resuelta, el resto se reduce a ejecución rutinaria; y el {\bf paso penúltimo} es la pregunta ``¿qué hecho único, si lo tuviera, me daría el Objetivo de inmediato?''. En Física, el paso penúltimo casi siempre coincide con identificar la {\bf condición} (C) correcta, y el paso crucial casi siempre coincide con obtener la {\bf variable intermedia} que esa condición requiere. En el ejemplo del plano inclinado (\hyperref[ex:planoinclinado]{Sección~2}), el paso crucial es obtener $N$: una vez conocida, el resto (sustituir en \textbf{(C.1)} y despejar $a$) es rutina.
+
+\medskip
+Identificar el paso crucial o el paso penúltimo es, sin embargo, un ejercicio inútil si la atención sigue puesta en el resultado final y no en el camino que lleva a él. El mejoramiento de la habilidad para resolver problemas requiere, antes que cualquier herramienta, un cambio de actitud fundamental: la atención debe centrarse más en el {\bf proceso de solución} que en la obtención de la respuesta. Un resultado correcto obtenido por intuición o por azar no construye el esquema que permitirá resolver los problemas relacionados que vendrán más adelante.
+
+\medskip
+La práctica sistemática de la solución de problemas apunta, en el largo plazo, hacia algo que va más allá del conocimiento y de las estrategias: el {\bf criterio}. Este término designa la capacidad de juzgar con precisión una situación física (a veces antes de escribir una ecuación, a veces sin poder explicar completamente el razonamiento) porque se ha acumulado suficiente experiencia organizada. Un experto no solo conoce más fórmulas ni aplica mejor el método: reconoce el esquema del problema desde el enunciado, estima el orden de magnitud del resultado antes de calcularlo, y siente cuándo una respuesta no puede ser correcta sin necesidad de verificarla formalmente.
+
+En física esta capacidad se llama {\it intuición física}. Pero no se transmite: se construye. Y se construye exactamente así: trabajando los tres niveles de manera simultánea y sistemática. En el nivel {\bf cognitivo}, dominando los conceptos y los procedimientos del área. En el nivel {\bf estratégico}, internalizando tácticas como PREDICO hasta que su uso sea automático. Y en el nivel {\bf metacognitivo}, reflexionando sobre cada solución para convertirla en experiencia organizada, no solo en un resultado numérico archivado. PREDICO, las fases y las herramientas son el andamiaje; el criterio es la estructura que queda cuando el andamiaje ya no hace falta.
+
+\figplaceholder[0.72\linewidth]{6cm}{fig_EstrategiaTacticaCriterio}
+
+\medskip
+Pero hay un cuarto elemento, anterior a todos los demás, que no es cognitivo ni estratégico ni metacognitivo: es {\bf afectivo}. Pólya \cite{Polya1945} lo nombró con precisión en la cita que abre estas notas: {\it el encanto del descubrimiento y el goce del triunfo}. No se trata del alivio de aprobar un examen ni de la satisfacción de terminar una tarea. Es algo cualitativamente diferente: el placer genuino de enfrentarse a algo que parecía imposible o demasiado difícil, y encontrar que no lo era, o que lo era, pero que aun así se pudo.
+
+Ese placer no es un lujo pedagógico. Es el combustible que hace sostenible el esfuerzo a largo plazo. Un estudiante que resuelve problemas únicamente para obtener una calificación aprende procedimientos; uno que los resuelve porque disfruta entender aprende a pensar. La diferencia no está en la inteligencia ni en el talento: está en si ha experimentado ese encanto al menos una vez, con suficiente intensidad como para querer volver a sentirlo. Buscar deliberadamente ese momento, y protegerlo cuando aparece, es parte de lo que se espera de ti como estudiante.
+
+% ═══════════════════════════════════════════════════════════════════════════
+\section{Tipo 2: El problema --- PREDICO y las cuatro etapas}
+% ═══════════════════════════════════════════════════════════════════════════
+
+\noindent{\small\it Nota sobre el orden de estas notas: el Tipo 2 (problema) se desarrolla primero, en toda su profundidad, porque el Tipo 1 (ejercicio, Sección~3) se define como una versión abreviada del mismo esquema --- PREDICO tácito. Conviene leer esta sección antes que la del ejercicio, aunque el ejercicio sea, en la práctica del curso, la tarea más frecuente.}
+
+\medskip
+\begin{enumerate}
+
+% ───────────────────────────────────────────────────────────────────────────
+\item[A.] \textbf{Entender el problema}
+% ───────────────────────────────────────────────────────────────────────────
+
+\subsection*{La lectura del enunciado y la interpretación del contexto}
+
+La primera y quizás más importante habilidad en la solución de un problema es la {\bf lectura}, no las matemáticas. En el contexto universitario, los estudiantes frecuentemente realizan una lectura de exploración —buscan números, identifican palabras clave del tema— sin construir una comprensión integral del enunciado. Una lectura cuidadosa, activa y deliberada es condición necesaria para entender un problema.
+
+Los problemas de Física y Matemáticas se presentan siempre en un {\bf contexto narrativo}: un automóvil que frena, un atleta que salta, un módulo espacial que desciende sobre la Luna. Este contexto cumple una función doble. Por una parte, ancla el problema en una situación que puede ser visualizada e intuida. Por otra, introduce elementos narrativos que no tienen relevancia física y que el estudiante debe aprender a {\it depurar}. La tarea no consiste solo en identificar las variables relevantes, sino también en reconocer con claridad qué aspectos del contexto pueden ignorarse sin alterar la solución. Esta habilidad (saber qué descartar) es tan importante como saber qué usar.
+
+\subsection*{PREDICO: una táctica para entender el problema}
+
+Para guiar el proceso de comprensión proponemos la táctica {\bf PREDICO}, cuyo nombre corresponde al acrónimo de los elementos que deben estar presentes para considerar que un problema ha sido comprendido:
+
+\begin{center}
+{\bf P}arafraseo \quad {\bf R}epresentación \quad {\bf E}cuaciones relevantes \quad {\bf D}atos \quad {\bf I}ncógnitas \quad {\bf C}ondiciones \quad {\bf O}bjetivo
+\end{center}
+
+Es fundamental advertir desde el principio que {\bf PREDICO no es una secuencia lineal de pasos, sino una lista de verificación}. Los siete elementos deben estar presentes al terminar la fase de comprensión, pero el orden en que se construyen depende del problema y del estudiante. Hay problemas que se abren naturalmente por la representación (un diagrama revela de inmediato la geometría y las relaciones); otros se clarifican al identificar las ecuaciones relevantes del tema; otros requieren empezar por una lectura cuidadosa y un parafraseo antes de poder representar algo coherente. El Parafraseo puede esbozarse al inicio y refinarse al final, una vez identificado con precisión el Objetivo. Lo que no es negociable es que {\bf al terminar la fase de comprensión, todos los elementos de PREDICO deben estar presentes}.
+
+\medskip
+\noindent{\bf [P] Parafraseo}
+\medskip
+
+El parafraseo consiste en reformular el enunciado del problema con palabras propias. No se trata de copiar el enunciado ni de resumirlo mecánicamente: se trata de demostrar comprensión al traducir la situación a un lenguaje más directo y personal. Un buen parafraseo elimina la narrativa accesoria del contexto y retiene únicamente la información físicamente relevante.
+
+Polya \cite{Polya1945} denominaba a este primer acercamiento {\it Piense}, una instrucción aparentemente sencilla pero en realidad profunda: antes de escribir una ecuación, antes de trazar un diagrama, piense en lo que el problema está pidiendo. El parafraseo es la versión escrita y verificable de ese proceso mental.
+
+\medskip
+\noindent{\bf [R] Representación}
+\medskip
+
+Una representación es cualquier forma de externalizar lo que se sabe del problema. En Física, la representación no se reduce a un dibujo: es un conjunto articulado de elementos cognitivos cuya calidad determina, en gran medida, la posibilidad de encontrar una solución. Distinguimos cuatro formas de representación:
+
+\begin{enumerate}
+    \item {\it Representación verbal.} Una descripción escrita del problema en palabras propias. Es la forma más básica y la que sustenta el Parafraseo.
+
+    \item {\it Representación pictórica.} El dibujo de la situación física. En Física, la representación pictórica tiene dos componentes inseparables y adopta formas especializadas según el esquema que se aplica.
+
+    \medskip
+    \noindent{\it Componentes del sistema de referencia}
+
+    El sistema de referencia no se reduce a los ejes coordenados: tiene dos componentes:
+    \begin{itemize}
+        \item {\bf Los ejes coordenados}: la elección del origen espacial y la orientación positiva de cada eje. Esta decisión no es cosmética: determina el signo de cada dato y la forma de cada ecuación. Colocar el origen en la posición inicial, por ejemplo, hace que $x_0 = 0$ y elimina un término de las ecuaciones.
+        \item {\bf El cronómetro}: la elección del instante $t = 0$. Fijar cuándo ``empieza el reloj'' es tan importante como fijar dónde está el origen espacial. Convenir que $t = 0$ coincide con el comienzo del movimiento de interés simplifica los datos y hace explícita la duración del proceso. Un sistema de referencia completo siempre especifica ambos componentes.
+    \end{itemize}
+
+    Tanto los ejes como el instante de referencia son elecciones libres: no cambian la física, pero una elección inteligente simplifica radicalmente los cálculos.
+
+    \medskip
+    \noindent{\it Tipos de representación pictórica según el esquema físico}
+
+    La representación pictórica adopta formas distintas según el modelo que se aplica al problema:
+    \begin{itemize}
+        \item {\bf Diagrama de estados} (cinemática, conservación de energía): se dibujan la {\bf situación inicial}, la {\bf situación final} y, cuando el problema lo requiere, las {\bf situaciones intermedias}. Cada estado muestra la posición del objeto, los vectores de velocidad (o altura, en energía) y las magnitudes relevantes etiquetadas con sus símbolos. El sistema de referencia (ejes y cronómetro) se superpone sobre el diagrama. Este tipo de representación hace visibles las condiciones de frontera del problema: lo que se conoce al inicio y lo que se busca al final.
+        \item {\bf Diagrama de cuerpo libre} (dinámica, Segunda Ley de Newton): se dibuja el {\bf sistema aislado} (el objeto o sistema de objetos cuya dinámica se analiza) con {\bf todas y únicamente} las fuerzas que actúan sobre él. El diagrama tiene implícito el sistema de referencia: los ejes se superponen para descomponer cada fuerza en sus componentes. Cada fuerza se etiqueta con su símbolo y su dirección inequívocos ($\vec{N}$, $\vec{W}$, $\vec{f}$, $\vec{T}$, etc.). La frontera del sistema (el criterio para decidir qué fuerzas incluir y cuáles no) debe ser explícita. Un diagrama de cuerpo libre incompleto (que omite fuerzas) o contaminado (que incluye fuerzas internas) lleva directamente a una Segunda Ley incorrecta.
+    \end{itemize}
+
+    \medskip
+    \noindent{\it La nomenclatura como herramienta de coherencia}
+
+    En cualquier tipo de representación pictórica, cada variable debe tener un símbolo único, inequívoco y consistente a lo largo de toda la solución. Los símbolos se escriben directamente sobre el diagrama, distinguiendo con claridad cantidades conocidas de desconocidas. Esta práctica convierte el diagrama en el documento de referencia de la solución: si los símbolos son inconsistentes en el diagrama, lo serán también en las ecuaciones.
+
+    \item {\it Representación gráfica.} Cuando el enunciado involucra una relación entre variables (posición en función del tiempo, velocidad en función de la posición, fuerza en función del desplazamiento), la representación adopta la forma de una curva o una región en el plano. Esta representación es cualitativamente diferente de la representación pictórica: un diagrama muestra la {\it situación}; una gráfica muestra el {\it comportamiento} de una variable. Ambas pueden aparecer en el mismo problema y cada una ofrece una perspectiva distinta.
+
+    \item {\it Representación matemática.} Las ecuaciones son también formas de representar lo que se conoce del problema. Cuando se reconoce la ecuación clave que conecta los datos con las incógnitas, se da el paso más importante hacia la solución.
+
+    \item {\it Representación vectorial de campo.} En problemas que involucran fuerzas y, en general, campos (gravitacional, eléctrico, magnético), la notación vectorial trasciende su función representacional y se convierte en un instrumento de interpretación de las leyes. Un vector dibujado sobre el diagrama no es solo una flecha, sino la ley misma expresada en forma geométrica.
+
+    Esta potencia interpretiva se manifiesta a distintos niveles:
+    \begin{itemize}
+        \item {\bf A nivel elemental:} escribir $\vec{F} = m\vec{a}$ en lugar de $F = ma$ no es un cambio cosmético. La ecuación vectorial codifica simultáneamente magnitud, dirección y sentido; impone que la aceleración y la fuerza neta sean colineales; y genera automáticamente las ecuaciones escalares por componentes al proyectarla sobre los ejes. La ecuación escalar es una consecuencia; la vectorial es la ley.
+
+        \item {\bf A nivel de campo:} un campo de fuerza $\vec{F}(\vec{r})$ es una función vectorial que asigna una flecha a cada punto del espacio, no un vector aislado. Representarlo como un mapa de vectores (o como sus líneas de campo) hace visible la estructura del espacio físico: la densidad de las líneas indica la intensidad; su dirección indica el sentido de la fuerza en cada punto. Esta imagen geométrica permite anticipar el comportamiento de una partícula antes de resolver ninguna ecuación.
+
+        \item {\bf A nivel de operadores vectoriales:} los operadores del cálculo vectorial ---gradiente ($\nabla$), divergencia ($\nabla\cdot$), rotacional ($\nabla\times$)--- son representaciones comprimidas de propiedades físicas estructurales de los campos:
+        \begin{itemize}
+            \item El {\bf gradiente} de un campo escalar apunta en la dirección de máximo crecimiento. La ley $\vec{F} = -\nabla V$ es una afirmación geométrica: la fuerza en cada punto es perpendicular a las superficies equipotenciales y apunta hacia el potencial decreciente. La representación del potencial como mapa de curvas de nivel hace la dirección de la fuerza directamente visible.
+            \item La {\bf divergencia} de un campo vectorial mide si hay fuentes o sumideros en cada punto. La ley de Gauss en forma diferencial, $\nabla \cdot \vec{E} = \rho/\varepsilon_0$, dice que las cargas son los únicos generadores del campo eléctrico: donde no hay carga, las líneas de campo ni se crean ni se destruyen. Esta afirmación topológica no tiene equivalente escalar directo.
+            \item El {\bf rotacional} mide la circulación local del campo. La ley de Faraday, $\nabla \times \vec{E} = -\partial\vec{B}/\partial t$, dice que un campo magnético variable genera un campo eléctrico que circula alrededor de él: una imagen geométrica de rotación que la forma integral de la ley oscurece.
+        \end{itemize}
+    \end{itemize}
+
+    Para la física introductoria, esta potencia se manifiesta en el diagrama de cuerpo libre (donde cada flecha es la representación de una interacción física real, no un símbolo abstracto) y en la descomposición vectorial de fuerzas, donde elegir bien los ejes hace que algunos vectores tengan componente cero y el sistema de ecuaciones se reduce. A niveles más avanzados, la misma lógica opera sin cambiar de naturaleza: la notación vectorial es el lenguaje en que la física está escrita, y aprenderlo es aprender a leer las leyes, no solo a aplicarlas.
+
+    \figplaceholder[0.55\linewidth]{6cm}{fig_CampoVectorial_Gravitacional}
+\end{enumerate}
+
+\medskip
+\noindent\textit{El código de colores como herramienta de verificación}
+\medskip
+
+Una práctica que ha demostrado ser especialmente útil en la construcción de la representación es el uso de colores para distinguir los diferentes tipos de información:
+
+\begin{itemize}
+    \item \dato{Verde} para los {\bf datos}: cantidades conocidas.
+    \item \incog{Rojo} para las {\bf incógnitas}: cantidades a determinar.
+    \item \cond{Azul} para las {\bf ecuaciones de condición}: las ecuaciones que relacionan datos e incógnitas.
+\end{itemize}
+
+Los colores son una guía, no una regla. Su función más importante es lógica, no estética: permiten leer una solución y verificar de un vistazo si la ecuación de condición (azul) realmente conecta datos (verde) con incógnitas (rojo). Si en la ecuación azul no aparece al menos un elemento verde y uno rojo, hay un error en la identificación de las condiciones del problema.
+
+\medskip
+\noindent{\bf [E] Ecuaciones relevantes}
+\medskip
+
+Escribe los principios físicos y las leyes que se aplican al problema. Estas son las ecuaciones {\it del tema}: independientes del problema concreto, válidas en cualquier situación que pertenezca al mismo esquema. En cinemática con aceleración constante, son las cuatro ecuaciones del MUA. En dinámica, son las leyes de Newton. En energía, son el teorema trabajo-energía y la conservación de la energía.
+
+La identificación de las ecuaciones relevantes es el paso en que el estudiante reconoce a qué {\it esquema} pertenece el problema. Esta es una de las competencias más importantes en la solución de problemas: reconocer que un problema concreto pertenece a una familia conocida y que, por lo tanto, se aborda con un conjunto determinado de herramientas.
+
+Listar el principio no basta: debe acompañarse de una {\bf justificación explícita} de por qué ese principio (y no otro) aplica a esta situación concreta. La prueba de una buena justificación es operativa: si se la entregara a un compañero que está atascado, ¿le bastaría para reconstruir la ruta de solución sin ayuda adicional? Esta exigencia no es un formalismo: en un curso completo donde la justificación se calificó explícitamente en los exámenes, los estudiantes identificaron el principio correcto el 70\% de las veces frente al 48\% de un curso equivalente sin esa práctica, y la ventaja se mantuvo (e incluso creció) meses después de terminado el curso \cite{Leonard1996,Mestre2020}. Redactar por qué se activa un principio, no solo cuál, es lo que convierte a [E] en una herramienta de retención y no en un trámite.
+
+En Física es posible aprovechar las libertades que ofrece la representación: la elección de un sistema de coordenadas particular puede simplificar considerablemente la forma de las ecuaciones. Por ejemplo, orientar el eje $x$ en la dirección del movimiento elimina las componentes transversales; colocar el origen en la posición inicial hace que $x_0 = 0$ o $y_0 = 0$, reduciendo el número de términos en las ecuaciones.
+
+La {\it transposición} del enunciado verbal a una ecuación es quizás el paso más delicado en la solución de problemas en Matemáticas y Física. Es un proceso perfectible que requiere entrenamiento. Cada vez que resuelva o analice la solución de un problema, intente comprender el razonamiento que conduce desde el enunciado hasta la ecuación.
+
+\medskip
+\noindent{\bf [D] Datos}
+\medskip
+
+Los datos son las cantidades conocidas del problema. Sin embargo, no todos los datos están declarados explícitamente en el enunciado: una parte importante de la comprensión consiste en identificar los {\bf datos implícitos}, aquellos que se derivan de condiciones físicas del problema aunque no estén escritos como números.
+
+Ejemplos de datos implícitos frecuentes:
+\begin{itemize}
+    \item ``El objeto parte del reposo'' $\Rightarrow v_0 = 0$
+    \item ``El proyectil alcanza su punto más alto'' $\Rightarrow v_y = 0$
+    \item ``El objeto toca el suelo'' $\Rightarrow y = 0$ (si el origen está en el suelo)
+    \item ``La superficie es sin fricción'' $\Rightarrow f = 0$
+\end{itemize}
+
+Una tabla de datos bien organizada, con los símbolos establecidos en la representación y con la distinción entre explícitos e implícitos, es una herramienta poderosa para evitar errores por omisión.
+
+\medskip
+\noindent{\bf [I] Incógnitas}
+\medskip
+
+Las incógnitas son las cantidades que el problema pide determinar. En muchos casos las incógnitas son explícitas: el enunciado pregunta directamente por una velocidad, una posición o una fuerza. Pero con frecuencia la resolución de la incógnita final requiere el cálculo previo de una {\bf variable intermedia}: una cantidad que el enunciado no solicita directamente pero que es necesaria como paso en la cadena de razonamiento.
+
+La identificación temprana de las variables intermedias es parte de la comprensión del problema, no del plan de ejecución. Un estudiante que anticipa, al analizar la situación, que necesitará calcular el tiempo de vuelo para después determinar el alcance, ha entendido mejor el problema que uno que llega a esa necesidad de forma inesperada a mitad de la solución.
+
+\medskip
+\noindent{\bf [C] Condiciones}
+\medskip
+
+Las condiciones son ecuaciones que relacionan simultáneamente datos (D) e incógnitas (I). Se obtienen al aplicar las ecuaciones del tema (E) a la situación específica del problema, incorporando las restricciones que impone el enunciado sobre el estado del sistema. Por ello también se les denomina {\it restricciones}.
+
+La distinción entre Ecuaciones (E) y Condiciones (C) es fundamental:
+\begin{itemize}
+    \item Las {\bf Ecuaciones} son el repertorio general del tema, independientes del problema concreto.
+    \item Las {\bf Condiciones} son las ecuaciones que {\it este problema específico} activa, al vincular el estado inicial del sistema con el estado final, o al relacionar estados intermedios con valores conocidos o desconocidos.
+\end{itemize}
+
+Una vez identificadas las condiciones, el problema deja de ser físico y se convierte en matemático: resta solo resolver el sistema de ecuaciones que conecta datos e incógnitas. La calidad de la identificación de condiciones determina directamente la viabilidad y la elegancia de la ruta de solución elegida.
+
+\medskip
+\noindent{\bf [O] Objetivo}
+\medskip
+
+El objetivo es la identificación explícita e inequívoca de qué debe calcularse. Aunque parece obvio, este elemento cierra y completa el Parafraseo. El estudiante que es capaz de formular el objetivo en términos matemáticos precisos (``determinar la magnitud $|v_y|$ en el instante en que $y = 0$'') ha demostrado que comprendió el problema. El Objetivo también puede revelar incógnitas intermedias (I) que no habían sido identificadas durante el análisis inicial.
+
+\subsection*{La no-linealidad de PREDICO}
+
+Como se advertía al inicio, PREDICO es una lista de verificación, no un algoritmo. El orden en que se construyen sus elementos varía según la naturaleza del problema y la experiencia del estudiante. Algunos ejemplos de rutas no lineales frecuentes:
+
+\begin{itemize}
+    \item Problemas con enunciado complejo: $P \to D \to R \to E \to I \to C \to O$ (el parafraseo abre el camino).
+    \item Problemas con figura dada: $R \to D + I \to E \to C \to O \to P$ (la representación lo organiza todo y el parafraseo se completa al final).
+    \item Problemas de reconocimiento inmediato de esquema: $E \to C \to D + I \to R \to O \to P$ (la identificación del esquema es el punto de entrada).
+\end{itemize}
+
+Lo que garantiza la comprensión no es el orden, sino la presencia de todos los elementos.
+
+\figplaceholder[0.78\linewidth]{7cm}{fig_PREDICO_NoLineal}
+
+\subsection*{Rutas de solución: el mismo problema, diferentes condiciones}
+
+Una consecuencia importante de la identificación de condiciones (C) es que, para un mismo problema, pueden existir {\bf múltiples rutas de solución igualmente válidas}, que se diferencian precisamente en qué condición se elige como punto de partida. Comparar rutas distintas para el mismo problema es, en física, la forma concreta de ejercitar {\it considerar diferentes puntos de vista}, uno de los ocho movimientos de pensamiento que sostienen la comprensión profunda de cualquier disciplina \cite{Ritchhart2011}: no hay una única manera correcta de mirar un problema, y notar dónde convergen o divergen dos rutas válidas revela qué parte de la solución depende de una elección y qué parte es estructura física ineludible.
+
+\medskip
+\noindent\textit{Ejemplo: alcance máximo de un proyectil}
+\medskip
+
+Consideremos el problema de determinar el alcance $R$ de un proyectil lanzado desde el suelo con velocidad inicial $v_0$ y ángulo $\alpha$. Las ecuaciones relevantes (E) son:
+\begin{align}
+    x(t) &= v_0 \cos\alpha \cdot t                                              \tag{E.1}\\
+    y(t) &= v_0 \sin\alpha \cdot t - \tfrac{1}{2}g\,t^2                        \tag{E.2}\\
+    y(x) &= x\tan\alpha - \frac{g\,x^2}{2\,v_0^2\cos^2\alpha}                  \tag{E.3}
+\end{align}
+
+Los datos (D) son $v_0$ y $\alpha$, con el origen en el punto de lanzamiento. La incógnita (I) directa es $R$. Ahora bien, la condición puede identificarse de dos maneras:
+
+\medskip
+\noindent{\it Ruta 1 --- condición geométrica sobre la trayectoria:}
+
+\noindent\textbf{Condición (C.1)}: \cond{$y(R) = 0$} — el proyectil toca el suelo cuando su posición en $y$ se anula para $x = R$.
+
+Aplicando \textbf{(C.1)} a la ecuación \textbf{(E.3)}:
+\[
+0 = R\tan\alpha - \frac{g\,R^2}{2\,v_0^2\cos^2\alpha}
+\]
+Esta ecuación cuadrática en $R$ tiene dos soluciones: $R = 0$ (punto de lanzamiento) y $R = \dfrac{v_0^2\sin 2\alpha}{g}$. No se introduce ninguna incógnita intermedia; el resultado es directo.
+
+\medskip
+\noindent{\it Ruta 2 --- condición cinemática sobre el tiempo de vuelo:}
+
+\noindent\textbf{Condición (C.2)}: \cond{$y(t_v) = 0$} — el proyectil toca el suelo en el instante $t_v$ (variable intermedia que aparece aquí en I).
+
+Aplicando \textbf{(C.2)} a la ecuación \textbf{(E.2)}:
+\[
+0 = v_0 \sin\alpha \cdot t_v - \tfrac{1}{2}g\,t_v^2 \implies t_v = \frac{2\,v_0\sin\alpha}{g}
+\]
+Sustituyendo en la ecuación \textbf{(E.1)}: $R = x(t_v) = v_0\cos\alpha \cdot t_v = \dfrac{v_0^2\sin 2\alpha}{g}$.
+
+\medskip
+Ambas rutas conducen al mismo resultado. La diferencia reside en qué condición se identifica como punto de partida y, como consecuencia, si se introduce o no la variable intermedia $t_v$. Esto ilustra una idea central: {\bf la identificación de las condiciones (C) es lo que determina las rutas posibles de solución}. Quien identifica más condiciones aplicables tiene más rutas disponibles. La elección entre ellas pertenece ya a la siguiente fase: Concebir un plan.
+
+\figplaceholder[0.82\linewidth]{6cm}{fig_DiagramaEstados_Proyectil}
+
+
+% ───────────────────────────────────────────────────────────────────────────
+\item[B.] \textbf{Concebir un plan}
+% ───────────────────────────────────────────────────────────────────────────
+
+¿Has visto un problema como este? ¿Encaja en un esquema que ya conoces? ¿Podrías simplificar este problema? ¿Puedes encontrar resultados útiles a partir de los datos aunque no sean la solución final? Si tu plan implica resolver un sistema de ecuaciones, verifica que tengas tantas ecuaciones como incógnitas: las condiciones identificadas en (C) son las que completan el sistema.
+
+Un plan es una {\bf lista ordenada de acciones}. Cada acción tiene dos componentes obligatorios: la {\bf ecuación que se activará} (referenciada por su número: (C.$n$) o (E.$n$)) y el {\bf tipo de operación matemática} que se realizará sobre ella. Sin estos dos componentes, el plan es una declaración de intenciones, no un programa de ejecución.
+
+Los tipos de operación más frecuentes en Física son:
+
+\begin{center}
+\small
+\begin{tabular}{ll}
+\hline
+\textbf{Operación} & \textbf{Descripción} \\
+\hline
+Despeje algebraico     & Aislar la incógnita sin sustituir valores numéricos \\
+Sustitución numérica   & Reemplazar datos en la expresión algebraica obtenida \\
+Descomposición vectorial & Proyectar una ecuación vectorial sobre cada eje \\
+Solución de sistema    & Resolver dos o más ecuaciones simultáneas \\
+Solución de cuadrática & Aplicar la fórmula cuadrática o factorizar \\
+Integración            & Calcular una integral definida o indefinida \\
+Derivación             & Calcular una derivada (máximos, velocidad, campo) \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{enumerate}
+    \item[I.] {\it\bf Formula un plan.} Escribe la lista de pasos con el formato:
+
+    \medskip
+    \noindent\hspace{1em}Paso $k$: [qué se obtiene] $\leftarrow$ usando \textbf{(C.$n$)} [o \textbf{(E.$n$)}] $\rightarrow$ operación: [tipo]
+
+    \medskip
+    El último paso de la lista debe producir el Objetivo. Si un paso requiere una incógnita intermedia no listada aún en (I), este es el momento de identificarla: un plan bien formulado hace visible la cadena completa de dependencias antes de ejecutar ninguna operación. Verificar que hay tantas ecuaciones independientes como incógnitas (incluyendo las intermedias) es parte de la formulación del plan, no de su ejecución.
+\end{enumerate}
+
+
+% ───────────────────────────────────────────────────────────────────────────
+\item[C.] \textbf{Ejecutar el plan}
+% ───────────────────────────────────────────────────────────────────────────
+
+Esta fase generalmente involucra manipulaciones matemáticas. Intenta que tu trabajo sea tan limpio y ordenado como sea posible para facilitar la revisión y reducir los errores por descuido. Ten siempre presente a dónde vas y de dónde vienes: etiqueta las ecuaciones y registra lo que has encontrado en cada paso.
+
+\begin{enumerate}
+    \item[II.] {\it\bf Simplifica.} Manipula algebraicamente las ecuaciones tanto como sea posible hasta obtener una expresión lo más simple posible. {\bf No reemplaces los valores numéricos en las ecuaciones durante este paso.} Esta regla es especialmente importante cuando hay que calcular más de una cantidad. Llegar a una expresión simplificada al máximo no solo reduce el riesgo de error numérico, sino que permite estudiar el comportamiento de la solución cuando las variables o los parámetros tienden a valores extremos (muy grandes, muy pequeños, o incluso cero).
+
+    \item[III.] {\it\bf Calcula.} Reemplaza los valores numéricos con sus unidades en la expresión obtenida y realiza los cálculos. El resultado típico es un número acompañado de una unidad física. Recuerda que un número sin unidades no representa una solución física.
+
+    Todo dato de entrada tiene, en principio, una incertidumbre asociada: proviene de una medición, y toda medición tiene una resolución finita. La práctica habitual en los cursos teóricos (tratar los datos como exactos) es una convención de trabajo, no una afirmación sobre la naturaleza de los datos.
+
+    Esta convención tiene un límite preciso: distingue los {\bf problemas de tablero} de los problemas que hacen referencia a un experimento real.
+    \begin{itemize}
+        \item Un {\bf problema de tablero} (o de cuaderno) usa datos que son idealizaciones (velocidad exacta, masa exacta, ángulo exacto) y la respuesta es también exacta en el sentido matemático. La incertidumbre no se declara porque no hay instrumento de medición en el enunciado: los datos son supuestos, no medidos.
+        \item Un {\bf problema experimental} hace referencia a datos que alguien midió con algún instrumento. Aquí, la determinación de la incertidumbre del resultado es parte constitutiva de la solución, no un paso opcional. Un resultado sin incertidumbre, cuando los datos provienen de mediciones, no está completo: no dice con qué precisión se conoce la respuesta, y por lo tanto no permite comparar el resultado con otro valor ni con una predicción teórica. Este tipo de problema corresponde al Tipo 5 (Incertidumbre y medición), desarrollado por separado en estas notas.
+    \end{itemize}
+
+    La distinción no siempre es obvia en el enunciado. Como criterio práctico: si el enunciado incluye datos con cifras significativas limitadas que reflejan la resolución de un instrumento (``la masa es $2.35\;kg$'', no ``la masa es $\frac{47}{20}\;kg$''), el problema invita a tratar la incertidumbre. Si los datos son enteros o fracciones exactas, es un problema de tablero.
+
+    \item[IV.] {\it\bf Redondea.} Determina el número de cifras significativas apropiado para el resultado. Como regla general, el resultado de una multiplicación o división debe redondearse al mismo número de cifras significativas que la cantidad de entrada con menos cifras significativas. No redondees a mitad del cálculo: hacerlo prematuramente puede introducir errores acumulativos.
+\end{enumerate}
+
+
+% ───────────────────────────────────────────────────────────────────────────
+\item[D.] \textbf{Revisión, reflexión y horizontes}
+% ───────────────────────────────────────────────────────────────────────────
+
+\begin{enumerate}
+    \item[V.] {\it\bf Revisa.} Juzga por ti mismo si la respuesta, tanto en el número como en las unidades, parece físicamente razonable. A menudo se puede evitar entregar una solución incorrecta con esta comprobación final. Verifica:
+    \begin{itemize}
+        \item {\bf Análisis dimensional:} ¿Las unidades del resultado son las correctas? El análisis dimensional es una táctica poderosa para detectar errores en las fórmulas deducidas.
+        \item {\bf Orden de magnitud:} ¿El resultado es razonable en el contexto del problema? Si su respuesta para la masa del Sol es de unos pocos kilogramos, algo está mal.
+        \item {\bf Casos límite:} ¿Qué sucede con la solución cuando algún parámetro tiende a cero, a infinito o a un valor especial? Los casos límite son una forma poderosa de verificar la consistencia física de la solución.
+        \item {\bf Conservación de energía (soluciones computacionales):} si la solución se obtuvo con una simulación numérica en vez de una expresión cerrada, este chequeo se suma a los tres anteriores: verificar que la energía (o el momento) se conserva es una prueba de la validez del código en sí, independiente de si el resultado final parece físicamente razonable \cite{MaltheSorenssen2015}.
+    \end{itemize}
+
+    \item[VI.] {\it\bf Generaliza.} Tómate un tiempo para revisar el problema en perspectiva: ¿Cuál fue el esquema? ¿Qué modelo físico se utilizó? ¿Qué aproximaciones se hicieron? ¿Hay alguna manipulación matemática que valga la pena recordar? La generalización es lo que transforma la solución de un problema particular en una herramienta reutilizable. Presta especial atención a los {\it trucos matemáticos} o aproximaciones físicas empleadas: son los que más se olvidan y los que más valor tienen para problemas futuros.
+
+    \item[VII.] {\it\bf Reflexiona.} La metacognición es el proceso de pensar sobre el propio pensamiento: examinar no solo {\it qué} se calculó, sino {\it cómo} y {\it por qué} se tomaron las decisiones que se tomaron. Estas preguntas guían la reflexión:
+    \begin{itemize}
+        \item {\bf Sobre la estrategia:} ¿Qué decisiones fueron clave en la solución? ¿Por qué funcionaron? ¿Qué habría ocurrido si se hubiera tomado otra ruta? Identificar el momento en que el problema se simplificó (o se complicó innecesariamente) construye criterio para los problemas que vendrán.
+        \item {\bf Sobre la física:} ¿Qué dice el resultado sobre el comportamiento del sistema? ¿Qué modelo físico fue activado? ¿En qué otros contextos aparece el mismo esquema? La solución de un problema concreto debe siempre ampliarse hacia una comprensión más general del fenómeno.
+        \item {\bf Sobre ti como aprendiz:} Aprender a resolver problemas incluye aprender {\it cómo aprendes tú}. ¿Qué hiciste bien en este problema? ¿Qué momento te resultó difícil o incómodo? Todos tenemos {\bf zonas de resistencia}: aspectos del proceso (un tipo de álgebra, la gestión de signos, la construcción del diagrama, la interpretación de un resultado negativo) que nos cuestan más esfuerzo o que simplemente no disfrutamos. Identificarlas no es reconocer una incapacidad, sino adquirir una ventaja. Quien sabe que los signos en la cinemática son su zona de resistencia, revisa dos veces cada signo; quien no lo sabe, comete el mismo error sin entender por qué. El conocimiento de tus fortalezas y zonas de resistencia es una herramienta de precisión: te dice exactamente dónde concentrar la atención deliberada.
+
+        \item {\bf Sobre tu desarrollo del criterio:} Cada problema resuelto con conciencia deposita algo en tu experiencia que no es ni fórmula ni procedimiento: es un {\it patrón reconocible}. Con el tiempo, ese depósito acumulado forma el criterio: la capacidad de mirar un problema y tener un juicio confiable sobre su estructura antes de hacer ningún cálculo. Después de este problema: ¿reconociste en algún momento que la ecuación $v^2 = v_0^2 + 2a\Delta x$ era la herramienta adecuada antes de verificarlo formalmente? ¿Estimaste el orden de magnitud del resultado antes de calcularlo? Esos destellos de anticipación son señales de que el criterio está tomando forma. Obsérvalos. Aliméntalos.
+    \end{itemize}
+\end{enumerate}
+
+{\small
+Estas cuatro preguntas no son una invención {\it ad hoc}: cada una activa uno o más de los ocho {\bf movimientos de pensamiento} (\textit{thinking moves}) que Ritchhart, Church y Morrison identifican como el núcleo de la comprensión profunda en cualquier disciplina \cite{Ritchhart2011}. Hacerlos explícitos no cambia lo que ya se pregunta en Reflexionar; confirma que la práctica está bien fundamentada:
+
+\medskip
+\begin{center}
+\footnotesize
+\begin{tabular}{p{3.4cm}p{9.5cm}}
+\hline
+\textbf{Eje de Reflexionar} & \textbf{Movimientos de pensamiento que activa (Ritchhart et al., 2011)} \\
+\hline
+Sobre la estrategia         & Razonar con evidencia; hacer conexiones (con rutas alternativas no tomadas) \\
+Sobre la física              & Construir explicaciones; hacer conexiones (con otros contextos del mismo esquema) \\
+Sobre ti como aprendiz       & Descubrir lo complejo (las propias zonas de resistencia rara vez son obvias de entrada) \\
+Sobre tu desarrollo del criterio & Captar la esencia y sacar conclusiones \\
+\hline
+\end{tabular}
+\end{center}
+
+\medskip
+\noindent Dos movimientos del mapa de Ritchhart no están representados en esta lista porque ya tienen un lugar propio en estas notas: {\it preguntar} corresponde a los Horizontes (a continuación), y {\it considerar diferentes puntos de vista} corresponde a la subsección ``Rutas de solución'', más arriba en esta sección: comparar la Ruta~1 y la Ruta~2 del problema del proyectil {\bf es}, literalmente, ejercitar ese movimiento.
+}
+
+\subsection*{Horizontes}
+
+Cada problema resuelto abre nuevas preguntas. Los {\bf Horizontes} son preguntas abiertas que se desprenden naturalmente de la solución obtenida: extienden el problema hacia casos no calculados, situaciones modificadas o conexiones con otros temas. Son invitaciones a explorar, no ejercicios de comprobación. Pueden ser preguntas cuantitativas (``¿cuánto tiempo duró el proceso?''), cualitativas (``¿qué ocurriría si la aceleración no fuera constante?'') o de transferencia (``¿en qué otra situación física aparece el mismo esquema?''). Resolverlas es optativo; no responderlas es una oportunidad perdida.
+
+\end{enumerate}
+
+
+% ═══════════════════════════════════════════════════════════════════════════
+\subsection*{Ejemplo: alunizaje --- caída libre bajo gravedad lunar}
+% ═══════════════════════════════════════════════════════════════════════════
+
+\begin{enumerate}
+\item Alunizaje --- caída libre bajo la gravedad lunar.
+\begin{description}
+\item[Problema] Un vehículo espacial desciende lentamente hacia la superficie lunar. El motor de descenso se apaga cuando el vehículo está a $\dato{45.0\;m}$ sobre la superficie y tiene una velocidad descendente de $\dato{0.8\;m/s}$. Con el motor apagado, el vehículo entra en caída libre bajo la gravedad lunar ($\dato{g_L = 1.6\;m/s^2}$). ¿Qué rapidez $\incog{|v_y|}$ tiene justo antes de tocar la superficie?
+
+\item[Solución PREDICO]~
+
+\begin{description}
+    \item[{[P]} Parafraseo] Un módulo lunar apaga sus motores a 45 m del suelo llevando una velocidad inicial de bajada de 0.8 m/s. A partir de ese instante cae libremente bajo la débil gravedad lunar. Se pide la rapidez de impacto.
+
+    \item[{[R]} Representación] Se define el origen en el suelo, eje $y$ positivo hacia arriba; el cronómetro se inicia en $t=0$ en el instante en que se apagan los motores. Tipo de representación: {\bf diagrama de estados} — se identifican el estado inicial ($t=0$: vehículo a 45 m con velocidad descendente) y el estado final ($t=t_f$: vehículo en el suelo). El vehículo está inicialmente a $\dato{y_0 = 45.0\;m}$ y la velocidad inicial es $\dato{v_{0y} = -0.8\;m/s}$ (signo negativo por ser descendente). La posición final es $\dato{y = 0\;m}$.
+
+    \figplaceholder[0.45\linewidth]{7cm}{fig_DiagramaEstados_Alunizaje}
+
+    \item[{[E]} Ecuaciones relevantes] Ecuaciones cinemáticas para MUA (caída libre):
+    \begin{align}
+        v_y     &= v_{0y} - g\,t                        \tag{E.1}\\
+        y       &= y_0 + v_{0y}\,t - \tfrac{1}{2}g\,t^2 \tag{E.2}\\
+        v_y^2   &= v_{0y}^2 - 2g\,(y - y_0)             \tag{E.3}
+    \end{align}
+
+    \item[{[D]} Datos] $\dato{y_0 = 45.0\;m}$, $\dato{y = 0\;m}$, $\dato{v_{0y} = -0.8\;m/s}$, $\dato{g_L = 1.6\;m/s^2}$.
+
+    \item[{[I]} Incógnitas] $\incog{v_y}$ (velocidad final, la rapidez será $|v_y|$). No se requieren variables intermedias.
+
+    \item[{[C]} Condición] \textbf{(C.1)}: \cond{$v_y^2 = v_{0y}^2 - 2g(y - y_0)$} \hfill [ecuación \textbf{(E.3)}]
+
+    Se elige \textbf{(E.3)} porque el tiempo de caída no se conoce ni se solicita: introducirlo como variable intermedia requeriría dos pasos adicionales (aplicar (E.2) para hallar $t$, luego (E.1)), mientras que (E.3) conecta directamente $\dato{v_{0y}}$, $\dato{y_0}$ e $\dato{y}$ con la incógnita $\incog{v_y}$.
+
+    \item[{[O]} Objetivo] Calcular $\incog{|v_y|}$ aplicando la condición \textbf{(C.1)}. El problema se reduce a despejar $v_y$ de una ecuación algebraica (ya no es un problema físico, sino matemático).
+\end{description}
+
+\item[Ejecutar]~
+\begin{align}
+\incog{v_y} &= \pm\sqrt{v_{0y}^2 - 2g_L(y - y_0)} \nonumber\\
+&= -\sqrt{(\dato{-0.8\;m/s})^2 - 2(\dato{1.6\;m/s^2})(\dato{0} - \dato{45.0\;m})} \nonumber\\
+&= -\sqrt{0.64\;m^2/s^2 + 144\;m^2/s^2} \nonumber\\
+&\approx -12.0\;m/s
+\end{align}
+La rapidez de impacto es $\incog{|v_y|} \approx 12.0\;m/s$.
+
+\item[Revisar] Las unidades son correctas ($m^2/s^2$ dentro de la raíz, $m/s$ al extraerla). Una rapidez de $12.0\;m/s$ ($\approx 43\;km/h$) es razonable: en la Tierra, una caída desde 45 m resultaría en cerca de $30\;m/s$. La gravedad lunar, seis veces menor, atenúa el impacto consistentemente.
+
+\item[Generalizar] La condición \textbf{(C.1)} activó la ecuación \textbf{(E.3)}: $v^2 = v_0^2 + 2g\Delta y$, que conecta velocidades con desplazamientos sin involucrar el tiempo. Este esquema aparece siempre que el tiempo no es relevante y la aceleración es constante; su potencia radica en que elimina una variable intermedia ($t$) que de otro modo requeriría dos pasos adicionales.
+
+\item[Reflexionar]~
+\begin{itemize}
+    \item \textbf{Sobre la estrategia:} La elección del origen en $y = 0$ (suelo) fue determinante: forzó signos estrictos ($y_0 = +45.0\;m$, $v_{0y} = -0.8\;m/s$) que hubieran generado un error bajo la raíz si se hubieran invertido. Esta disciplina en la representación (R) es lo que protegió la solución. La selección de \textbf{(E.3)} como condición evitó una variable intermedia ($t$) y redujo el problema a una sola ecuación algebraica.
+    \item \textbf{Sobre la física:} La gravedad lunar ($g_L \approx g_\oplus/6$) produce impactos que serían letales en la Tierra pero tolerables para la estructura de un módulo de descenso. El término $v_{0y}^2$ muestra que incluso una pequeña velocidad inicial descendente contribuye de forma cuadrática a la energía del impacto; no es despreciable aunque sea pequeña.
+    \item \textbf{Sobre ti como aprendiz:} Este problema activa al menos dos zonas de resistencia frecuentes. La primera es la \textit{gestión de signos en cinemática}: definir el eje positivo hacia arriba obliga a que la velocidad inicial descendente sea negativa, y esa convención debe mantenerse sin excepción hasta el resultado final. Si los signos son tu zona de resistencia, este es el momento de ser deliberadamente cuidadoso. La segunda es la \textit{interpretación del signo del resultado}: $v_y \approx -12.0\;m/s$ no es una rapidez negativa, sino un vector que apunta hacia abajo; la rapidez es su magnitud. Confundir vector con magnitud es un error de interpretación, no de cálculo. ¿Cuál de estas zonas te resultó más difícil en este problema? ¿Hay alguna que no habías identificado como propia antes de resolverlo?
+
+    \item \textbf{Sobre tu desarrollo del criterio:} En este problema, la ecuación \textbf{(E.3)} es la elección natural para cualquiera que ya tenga criterio cinemático: cuando el tiempo no aparece ni en los datos ni en las incógnitas, la ecuación que no involucra $t$ se activa de forma casi automática. ¿Lo viste antes de leer la solución, o lo descubriste al revisar las ecuaciones sistemáticamente? No hay respuesta incorrecta: ambas rutas son válidas. Pero si lo viste de inmediato, es una señal de que ese patrón ya está sedimentado en tu experiencia. Si no, este problema acaba de depositarlo.
+\end{itemize}
+
+\medskip
+\noindent\rule{\linewidth}{0.4pt}
+\noindent\textbf{Horizontes}
+\medskip
+
+\begin{enumerate}
+    \item ¿Cuántos segundos estuvo el vehículo en caída libre antes de tocar la superficie? Ahora que se conoce tanto $v_{0y}$ como $v_y$, ¿cuál de las ecuaciones \textbf{(E.1)}–\textbf{(E.3)} ofrece el despeje más directo?
+    \item Si el motor se hubiera apagado a la misma altura pero con velocidad inicial nula ($v_{0y} = 0$), ¿cuál habría sido la rapidez de impacto? ¿En qué porcentaje difiere del resultado original?
+    \item ¿Qué altura máxima de apagado del motor permitiría un impacto con rapidez $\leq 3\;m/s$ (velocidad de aterrizaje segura)? ¿Qué supuesto sobre la velocidad inicial debes hacer?
+\end{enumerate}
+\end{description}
+\end{enumerate}
+
+\medskip
+\noindent\rule{\linewidth}{0.4pt}
+\noindent{\bf Variante --- la misma física, formato \textit{context-rich}}
+\medskip
+
+El enunciado original ya nombra la incógnita ($\incog{|v_y|}$): eso resuelve por adelantado la mitad de la tarea de comprensión. Heller y Hollabaugh mostraron que reescribir el mismo problema en un formato realista, {\bf sin} etiquetar la variable objetivo, obliga al estudiante a decidir por sí mismo qué se está pidiendo antes de poder empezar, y que los grupos que trabajan con este formato usan estrategias de solución más completas que con el problema de libro de texto equivalente \cite{Heller1992}. Misma física, mismos datos, formato distinto:
+
+\begin{quote}
+{\small\it
+Eres el ingeniero de guiado en la sala de control durante el descenso de un módulo lunar no tripulado. A $45.0\;m$ de altura, con el vehículo descendiendo a $0.8\;m/s$, el protocolo ordena apagar el motor de descenso para conservar combustible para la siguiente misión. La estructura del tren de aterrizaje está certificada para soportar impactos de hasta $15\;m/s$ sin daño estructural. ¿Autorizas el apagado del motor a esa altura, o recomiendas esperar a menor altitud?
+}
+\end{quote}
+
+Nada en este enunciado dice ``calcule la rapidez final''. El estudiante debe reconocer, sin ayuda, que la pregunta de decisión (¿autorizar o no?) requiere primero calcular $\incog{|v_y|}$ y compararla contra el límite estructural de $15\;m/s$, exactamente el mismo cálculo de \textbf{(C.1)} que ya se hizo arriba ($\approx 12.0\;m/s$), pero ahora la Fase D (Revisar) tiene un criterio de decisión real, no solo una comprobación de unidades: como $12.0 < 15$, el apagado a $45.0\;m$ es seguro.
+
+\bigskip
+% ═══════════════════════════════════════════════════════════════════════════
+\subsection*{Ejemplo: bloque en plano inclinado --- Segunda Ley y diagrama de cuerpo libre}
+\label{ex:planoinclinado}
+% ═══════════════════════════════════════════════════════════════════════════
+
+\begin{enumerate}
+\item Bloque sobre plano inclinado rugoso.
+\begin{description}
+
+\item[Problema] Un bloque de $\dato{m = 3.0\;\text{kg}}$ se libera desde el reposo sobre un plano inclinado rugoso. El ángulo de inclinación es $\dato{\theta = 37^\circ}$ y el coeficiente de fricción cinética es $\dato{\mu_k = 0.20}$. Determina la aceleración $\incog{a}$ con que el bloque desciende por el plano.
+
+\item[Solución PREDICO]~
+
+\begin{description}
+    \item[{[P]} Parafraseo] Un bloque desliza cuesta abajo por un plano rugoso inclinado a $37^\circ$ bajo la acción del peso y la fricción cinética. Se pide la aceleración durante el deslizamiento.
+
+    \item[{[R]} Representación] Sistema aislado: el bloque. Ejes del diagrama de cuerpo libre: eje $x$ positivo cuesta abajo (dirección del movimiento esperado), eje $y$ positivo perpendicular al plano hacia afuera de la superficie; cronómetro iniciado en $t = 0$ al liberar el bloque. Tipo de representación: {\bf diagrama de cuerpo libre (DCL)} — tres fuerzas actúan sobre el bloque:
+    \begin{itemize}
+        \item Peso $\vec{W} = m\vec{g}$ (vertical, hacia abajo): componente $mg\sin\theta$ en $+x$ (cuesta abajo) y componente $mg\cos\theta$ en $-y$ (hacia el plano).
+        \item Normal $\vec{N}$ (perpendicular al plano, en $+y$).
+        \item Fricción cinética $\vec{f}_k$ (a lo largo del plano, en $-x$, siempre opuesta al movimiento): magnitud $f_k = \mu_k N$.
+    \end{itemize}
+    La frontera del sistema es la superficie del bloque: $\vec{N}$ y $\vec{f}_k$ son las fuerzas de contacto del plano sobre el bloque; el peso es la acción gravitacional de la Tierra sobre el bloque. No se incluyen fuerzas que el bloque ejerce sobre el plano.
+
+    \figplaceholder[0.65\linewidth]{7.5cm}{fig_DCL_PlanoInclinado}
+
+    \item[{[E]} Ecuaciones relevantes] Segunda Ley de Newton y ley de fricción cinética:
+    \begin{align}
+        \sum\vec{F} &= m\vec{a}  \tag{E.1}\\
+        f_k         &= \mu_k\,N  \tag{E.2}
+    \end{align}
+
+    \item[{[D]} Datos] $\dato{m = 3.0\;\text{kg}}$, $\dato{\theta = 37^\circ}$, $\dato{\mu_k = 0.20}$, $\dato{g = 9.8\;\text{m/s}^2}$.
+
+    \item[{[I]} Incógnitas] $\incog{a}$ (aceleración del bloque). Variable intermedia: $\incog{N}$ (fuerza normal, necesaria para evaluar la fricción cinética por medio de \textbf{(E.2)}).
+
+    \item[{[C]} Condiciones] Proyectando \textbf{(E.1)} sobre cada eje del DCL:
+
+    \medskip
+    \noindent\textbf{(C.1)}: \cond{$mg\sin\theta - \mu_k N = ma$} \hfill [eje $x$, Segunda Ley]
+
+    \noindent\textbf{(C.2)}: \cond{$N - mg\cos\theta = 0$} \hfill [eje $y$, equilibrio perpendicular]
+    \medskip
+
+    \noindent El sistema tiene 2 ecuaciones y 2 incógnitas ($\incog{N}$, $\incog{a}$): está determinado.
+
+    \item[{[O]} Objetivo] Obtener $\incog{a}$: primero $\incog{N}$ a partir de \textbf{(C.2)}, luego sustituirlo en \textbf{(C.1)} y despejar $\incog{a}$.
+\end{description}
+
+\item[Concebir un plan]~
+
+\medskip
+\noindent\hspace{1em}Paso~1: $\incog{N}$ $\leftarrow$ usando \textbf{(C.2)} $\rightarrow$ operación: despeje algebraico.
+
+\noindent\hspace{1em}Paso~2: $\incog{a}$ $\leftarrow$ usando \textbf{(C.1)} con $\incog{N}$ del Paso~1 $\rightarrow$ operación: sustitución y despeje algebraico; luego evaluación numérica.
+
+\medskip
+\noindent El Objetivo se produce en el Paso~2. El Paso~2 requiere el resultado del Paso~1 antes de ejecutarse: la dependencia es secuencial. Hay dos incógnitas y dos ecuaciones independientes: el sistema está determinado.
+
+\item[Ejecutar]~
+
+\noindent{\it Paso 1:}
+\begin{align}
+\incog{N} &= mg\cos\theta \nonumber
+\end{align}
+
+\noindent{\it Paso 2:}
+\begin{align}
+mg\sin\theta - \mu_k(mg\cos\theta) &= ma \nonumber\\
+\incog{a} &= g(\sin\theta - \mu_k\cos\theta) \nonumber
+\end{align}
+El factor $m$ se cancela: la aceleración del bloque no depende de su masa.
+
+Evaluando con la aproximación habitual para este ángulo ($\sin 37^\circ \approx 0.60$, $\cos 37^\circ \approx 0.80$):
+\begin{align}
+\incog{a} &= 9.8\;\frac{\text{m}}{\text{s}^2}\;(0.60 - 0.20\times 0.80) \nonumber\\
+          &= 9.8\;\frac{\text{m}}{\text{s}^2}\;(0.60 - 0.16) \nonumber\\
+          &\approx 4.3\;\frac{\text{m}}{\text{s}^2} \nonumber
+\end{align}
+
+\item[Revisar] Las unidades son correctas: $g(\sin\theta - \mu_k\cos\theta)$ tiene unidades de $[\text{m/s}^2][\text{adim}] = [\text{m/s}^2]$. La aceleración $4.3\;\text{m/s}^2$ es menor que $g\sin 37^\circ \approx 5.9\;\text{m/s}^2$ (caso sin fricción): la fricción frena el deslizamiento de forma consistente. Casos límite: si $\mu_k = 0$, se recupera $a = g\sin\theta$; si $\mu_k = \tan\theta \approx 0.75$, entonces $a = 0$ (el bloque baja a velocidad constante). El enunciado supone que el bloque desliza; la condición para que eso ocurra es $\mu_k < \tan\theta$, que se verifica: $0.20 < 0.75$.
+
+\item[Generalizar] La expresión $a = g(\sin\theta - \mu_k\cos\theta)$ es el resultado canónico del plano inclinado con fricción cinética. La cancelación de $m$ extiende el resultado galileano al caso con rozamiento: todos los bloques, con independencia de su masa, descienden con la misma aceleración bajo las mismas condiciones geométricas y de contacto. El esquema (DCL, ejes alineados con el plano, equilibrio perpendicular para desacoplar $\incog{N}$, sustitución en la ecuación de movimiento) es la plantilla estándar para cualquier problema de dinámica plana con fuerzas de contacto.
+
+\item[Reflexionar]~
+\begin{itemize}
+    \item \textbf{Sobre la estrategia:} La elección de ejes alineados con el plano inclinado fue la decisión estructural del problema: el eje $y$ perpendicular convirtió la proyección de la Segunda Ley en un equilibrio puro ($a_y = 0$), desvinculando $\incog{N}$ de la ecuación de movimiento. Con ejes horizontal--vertical, tanto $\incog{N}$ como $\incog{a}$ habrían aparecido en ambas ecuaciones, exigiendo un sistema acoplado. La elección de ejes no modifica el resultado físico, pero determina la complejidad algebraica del camino.
+
+    \item \textbf{Sobre la física:} La cancelación de $m$ no es un accidente algebraico: la masa inercial (en $ma$) y la masa gravitacional (en $mg$) son la misma magnitud, y la fricción escala con $N = mg\cos\theta$, por lo que también es proporcional a $m$. Es el principio de equivalencia que Galileo estableció empíricamente y que Einstein elevó al fundamento de la Relatividad General. Consecuencia concreta: en una rampa con $\mu_k$ uniforme, la masa del objeto no influye en cuánto tarda en llegar al fondo.
+
+    \item \textbf{Sobre ti como aprendiz:} Tres zonas de resistencia frecuentes en este esquema. \textit{Primera:} construir el DCL correcto, incluyendo {\it todas} las fuerzas sobre el sistema y ninguna que el sistema ejerza sobre otros objetos. Una omisión en el DCL es un error de modelo, no de álgebra. \textit{Segunda:} la dirección de la fricción cinética, siempre opuesta al movimiento y no ``siempre cuesta arriba'': si el bloque asciende con velocidad inicial, $\vec{f}_k$ apunta cuesta abajo. \textit{Tercera:} elegir el sentido positivo del eje $x$ en la dirección del movimiento esperado garantiza que el resultado de $\incog{a}$ sea positivo si el movimiento es en ese sentido, simplificando la interpretación del signo.
+
+    \item \textbf{Sobre tu desarrollo del criterio:} Reconocer de entrada que el equilibrio perpendicular da $N = mg\cos\theta$, antes de plantear el sistema completo, es una señal de criterio en dinámica plana: permite sustituir $f_k = \mu_k mg\cos\theta$ directamente en la ecuación de movimiento, sin tratar \textbf{(C.2)} como un paso explícito del plan. ¿En qué momento tuviste esa comprensión: antes de formular el plan, al ejecutar el Paso~1, o al revisar la solución? La respuesta te dice exactamente en qué estadio de automatización se encuentra ese patrón en tu repertorio.
+\end{itemize}
+
+\medskip
+\noindent\rule{\linewidth}{0.4pt}
+\noindent\textbf{Horizontes}
+\medskip
+
+\begin{enumerate}
+    \item El bloque parte del reposo y el plano mide $2.0\;\text{m}$. ¿Cuánto tiempo tarda en llegar al pie del plano? ¿Con qué rapidez llega?
+    \item El mismo bloque {\it sube} por el plano con velocidad inicial $v_0 = 3.0\;\text{m/s}$. ¿Cómo cambia el DCL respecto al caso del descenso? Escribe la expresión para la aceleración durante el ascenso y compárala en magnitud con la del descenso.
+    \item ¿Para qué valor de $\theta$ la aceleración de descenso es exactamente $a = g/2$, con $\mu_k = 0.20$? ¿Qué condición entre $\mu_k$ y $\theta$ garantiza movimiento a velocidad constante cuesta abajo?
+    \item Expresa $a$ únicamente en términos de $g$, $\theta$ y $\mu_k$, sin evaluar numéricamente. Esta expresión simbólica es exactamente el resultado del paso \textbf{[II] Simplifica}, antes de sustituir valores; entrégala como respuesta final, sin el número. ¿Qué información contiene esta forma que el valor $4.3\;\text{m/s}^2$ no muestra por sí solo?
+\end{enumerate}
+\end{description}
+\end{enumerate}
+
+% ═══════════════════════════════════════════════════════════════════════════
+\section{Tipo 1: El ejercicio --- PREDICO tácito}
+% ═══════════════════════════════════════════════════════════════════════════
+
+Un ejercicio se resuelve con la misma táctica que un problema (PREDICO seguido de las cuatro fases), pero con una diferencia fundamental en la densidad de elaboración. Mientras que en un problema cada elemento de PREDICO se desarrolla en profundidad y cada decisión se justifica explícitamente, en un ejercicio cada elemento ocupa una línea o menos. La estructura no desaparece: se vuelve tácita. El objetivo de practicar ejercicios es precisamente que esa estructura se internalice hasta ejecutarse de forma casi automática, liberando atención para los problemas donde la ruta no es evidente.
+
+\medskip
+La siguiente tabla resume las diferencias de profundidad entre los dos tipos:
+
+\medskip
+\begin{center}
+\small
+\begin{tabular}{lll}
+\hline
+\textbf{Elemento} & \textbf{Tipo 2 — Problema} & \textbf{Tipo 1 — Ejercicio} \\
+\hline
+{[P]} Parafraseo       & Párrafo completo, elimina contexto irrelevante    & Una línea \\
+{[R]} Representación   & Diagrama, sistema de referencia, nomenclatura     & Solo si la geometría lo exige \\
+{[E]} Ecuaciones       & Lista comentada, identifica el esquema del tema   & Solo la fórmula relevante \\
+{[D]} Datos            & Tabla explícita / implícitos identificados        & Lista compacta con unidades \\
+{[I]} Incógnitas       & Con variables intermedias anticipadas             & Declaración directa \\
+{[C]} Condición        & Elección justificada con referencia a (E.n)       & ``Aplico (E.n)'' \\
+{[O]} Objetivo         & Formulación matemática precisa                    & Una línea \\
+\hline
+\end{tabular}
+\end{center}
+
+\medskip
+Las fases de ejecución (I–VI) se aplican igual en ambos tipos. Lo que varía es la profundidad de la Fase A. Las fases de Reflexionar y Horizontes también se mantienen, pero con la misma economía que PREDICO tácito: cada eje de reflexión en una o dos líneas, y uno o dos horizontes en lugar de tres.
+
+\subsection*{Ejemplo: caída libre bajo gravedad terrestre}
+
+\begin{enumerate}
+\item Caída libre con velocidad inicial.
+
+\begin{description}
+\item[Ejercicio] Un objeto desciende desde una altura de $\dato{45.0\;m}$ con velocidad inicial de $\dato{0.8\;m/s}$ hacia abajo. Calcula la rapidez de impacto con el suelo. Toma $\dato{g = 9.8\;m/s^2}$.
+
+\item[Solución PREDICO tácito]~
+
+\begin{description}
+    \item[{[P]}] Objeto en caída libre desde 45 m con velocidad inicial de bajada. Se pide la rapidez al llegar al suelo.
+
+    \item[{[R]}] Eje $y$ positivo hacia arriba; origen en el suelo.
+
+    \item[{[E]}] Ecuaciones de MUA:
+    \begin{align}
+        v_y^2 &= v_{0y}^2 - 2g\,(y - y_0)  \tag{E.3}
+    \end{align}
+
+    \item[{[D]}] $\dato{y_0 = 45.0\;m}$,\quad $\dato{y = 0}$,\quad $\dato{v_{0y} = -0.8\;m/s}$,\quad $\dato{g = 9.8\;m/s^2}$.
+
+    \item[{[I]}] $\incog{v_y}$ (rapidez: $\incog{|v_y|}$).
+
+    \item[{[C]}] \textbf{(C.1)}: aplico \textbf{(E.3)}, tiempo no pedido ni conocido. \hfill \cond{$v_y^2 = v_{0y}^2 - 2g(y-y_0)$}
+
+    \item[{[O]}] Despejar $\incog{v_y}$ de \textbf{(C.1)}.
+\end{description}
+
+\item[Ejecutar]~
+\begin{align}
+\incog{v_y} &= -\sqrt{(\dato{-0.8})^2 - 2(\dato{9.8})(\dato{0} - \dato{45.0})} \nonumber\\
+            &= -\sqrt{0.64 + 882.0} \approx \mathbf{-29.7\;m/s} \nonumber
+\end{align}
+Rapidez de impacto: $\incog{|v_y|} \approx 29.7\;m/s$.
+
+\item[Revisar] Unidades correctas. Orden de magnitud: $\sqrt{2 \times 9.8 \times 45} \approx \sqrt{882} \approx 29.7\;m/s$. Razonable para caída libre desde 45 m.
+
+\item[Reflexionar]~
+\begin{itemize}
+    \item \textbf{Estrategia:} La elección de \textbf{(E.3)} eliminó la necesidad de calcular el tiempo, una variable que el enunciado no pide.
+    \item \textbf{Física:} Bajo gravedad terrestre, la rapidez de impacto es $\approx 29.7\;m/s$ (107 km/h). El mismo cálculo bajo gravedad lunar dio 12.0 m/s, un factor $\approx 2.5$, no 6. ¿Por qué no es exactamente $\sqrt{6}$? Porque la velocidad inicial también contribuye.
+    \item \textbf{Aprendiz:} ¿La gestión de signos fue automática o tuviste que detenerte a pensar?
+    \item \textbf{Criterio:} ¿Identificaste \textbf{(E.3)} como la ecuación adecuada antes de revisar la lista completa, o llegaste a ella por descarte?
+\end{itemize}
+
+\medskip
+\noindent\rule{\linewidth}{0.4pt}
+\noindent\textbf{Horizontes}
+\medskip
+
+\begin{enumerate}
+    \item El impacto terrestre ($\approx 29.7\;m/s$) frente al lunar ($\approx 12.0\;m/s$): ¿la diferencia es proporcional a $\sqrt{g_\oplus / g_L}$? Verifica numéricamente y explica por qué sí o por qué no.
+    \item Si el objeto partiera del reposo ($v_{0y} = 0$), ¿cuál sería la rapidez de impacto? ¿Qué porcentaje del resultado original representa la contribución de la velocidad inicial?
+\end{enumerate}
+\end{description}
+\end{enumerate}
+
+% ═══════════════════════════════════════════════════════════════════════════
+\section{Tipo 3: La pregunta conceptual --- construir el argumento físico}
+% ═══════════════════════════════════════════════════════════════════════════
+
+Una pregunta conceptual no pide calcular un número: pide explicar, justificar o predecir el comportamiento de un sistema a partir de los principios de la física. Su característica definitoria es que la respuesta consiste en un {\bf argumento}, no en una cifra. Lo que la hace difícil no es la complejidad matemática (puede no haber álgebra alguna) sino la exigencia de construir un razonamiento que sea completo, coherente, consistente y deducido de las leyes. Ese es el criterio de calidad del Tipo 3: los cuatro atributos del argumento científico, abreviados como {\bf 3C+D}.
+
+\medskip
+\noindent{\bf Criterio de calidad --- 3C+D:}
+\begin{itemize}
+    \item {\bf Completo:} el argumento considera todos los factores relevantes, sin omitir condiciones o casos que modificarían la conclusión.
+    \item {\bf Coherente:} cada paso fluye del anterior sin contradicción interna; el razonamiento tiene una dirección clara.
+    \item {\bf Consistente:} la conclusión no contradice otras leyes o resultados establecidos de la física.
+    \item {\bf Deducido} de las leyes: la conclusión se sostiene porque las leyes así lo imponen, no porque ``parece razonable'' ni porque coincide con la intuición.
+\end{itemize}
+
+\medskip
+La táctica para construir la respuesta tiene cinco pasos:
+
+\begin{enumerate}
+    \item[1.] {\bf Situación.} Identificar el sistema físico, su estado en el instante o condición relevante, y las fuerzas o interacciones que actúan sobre él. Este paso es el equivalente de [R]\,+\,[D] en PREDICO: la representación del escenario.
+
+    \item[2.] {\bf Principio.} Enunciar explícitamente la ley o principio que gobierna la situación. Sin esta declaración, el argumento queda anclado en la intuición y no en la física.
+
+    \item[3.] {\bf Cadena de razonamiento.} Construir el argumento paso a paso, conectando observaciones con leyes hasta llegar a una conclusión inevitable. Cada eslabón de la cadena debe ser justificable. Un argumento válido no tiene saltos: tiene pasos.
+
+    \item[4.] {\bf Conclusión.} Enunciar el resultado de forma precisa y sin ambigüedad. Una buena conclusión identifica no solo el valor o la dirección, sino también las condiciones bajo las cuales esa conclusión es válida.
+
+    \item[5.] {\bf Verificación 3C+D.} Revisar el argumento completo contra los cuatro criterios. ¿Omitió algún factor relevante? ¿Hay algún paso que supone en lugar de deducir? ¿La conclusión contradice alguna ley conocida? ¿Puede un lector crítico señalar un agujero en la cadena?
+\end{enumerate}
+
+\subsection*{Ejemplo: el proyectil en el punto más alto}
+
+\begin{enumerate}
+\item ¿Cuál es la aceleración de un proyectil en el punto más alto de su trayectoria?
+
+\begin{description}
+\item[Pregunta conceptual]
+Un proyectil es lanzado con un ángulo $\theta$ respecto a la horizontal. En el punto más alto de su trayectoria, la componente vertical de la velocidad es nula: $\dato{v_y = 0}$. ¿Cuál es la aceleración del proyectil en ese instante? ¿Es nula, menor que $g$, igual a $g$, o mayor que $g$?
+
+\item[Solución --- Argumento físico]~
+
+\begin{description}
+    \item[\textbf{1. Situación}]
+    Sistema: proyectil en vuelo libre. Estado en el instante de interés: punto más alto de la trayectoria, donde $\dato{v_y = 0}$. Fuerzas que actúan: únicamente el peso $\dato{F_g = mg}$, dirigido verticalmente hacia abajo (se desprecia la resistencia del aire, condición declarada). La componente horizontal $\dato{v_x}$ permanece constante y no nula durante todo el vuelo.
+
+    \item[\textbf{2. Principio}]
+    Segunda ley de Newton: la aceleración neta de un objeto es igual a la fuerza neta que actúa sobre él dividida por su masa:
+    \begin{align}
+        \vec{a} &= \frac{\sum \vec{F}}{m} \tag{E.1}
+    \end{align}
+
+    \item[\textbf{3. Cadena de razonamiento}]~
+    \begin{enumerate}
+        \item[\textbf{(i)}] La única fuerza que actúa sobre el proyectil es la gravitacional: $\sum \vec{F} = m\vec{g}$, dirigida hacia abajo. Esta afirmación es válida en {\it cualquier} punto de la trayectoria: el campo gravitacional no depende del estado cinemático del objeto que lo experimenta.
+        \item[\textbf{(ii)}] Aplicando \textbf{(E.1)}: $\vec{a} = m\vec{g}/m = \vec{g}$.
+        \item[\textbf{(iii)}] En el punto más alto, $v_y = 0$. Esto describe el {\bf estado cinemático} del proyectil en ese instante: informa que no hay desplazamiento vertical por unidad de tiempo. No describe las fuerzas que actúan sobre él, que no han cambiado.
+        \item[\textbf{(iv)}] La aceleración es consecuencia de la fuerza neta, no de la velocidad. Que $v_y = 0$ no implica $a_y = 0$: esto último requeriría que la fuerza vertical neta fuera cero, lo cual exigiría que la gravedad hubiera cesado. No ha cesado.
+    \end{enumerate}
+
+    \item[\textbf{4. Conclusión}]
+    La aceleración del proyectil en el punto más alto de su trayectoria es $\incog{\vec{a} = \vec{g}}$, dirigida verticalmente hacia abajo, con magnitud $\incog{g \approx 9.8\;m/s^2}$. Esta aceleración es idéntica en dirección, sentido y magnitud a la aceleración en cualquier otro punto del vuelo libre.
+
+    \item[\textbf{5. Verificación 3C+D}]~
+    \begin{itemize}
+        \item {\bf Completo:} se consideraron todas las fuerzas relevantes bajo la hipótesis declarada de ausencia de resistencia del aire. La hipótesis está explícita, no silenciada.
+        \item {\bf Coherente:} la cadena fluye sin contradicción: fuerza constante $\Rightarrow$ aceleración constante $\Rightarrow$ conclusión. No hay paso que suponga lo que debe demostrar.
+        \item {\bf Consistente:} el resultado es compatible con la cinemática del proyectil. La trayectoria parabólica requiere exactamente $a_y = -g$ constante: si la aceleración fuera cero en el punto más alto, la parábola sería imposible: el proyectil no podría curvar hacia abajo.
+        \item {\bf Deducido:} la conclusión deriva directamente de la Segunda Ley de Newton. El argumento no dice ``parece razonable que la gravedad siga actuando'': dice que la Segunda Ley lo impone mientras la única fuerza sea el peso.
+    \end{itemize}
+\end{description}
+
+\medskip
+\noindent{\bf Error frecuente --- la confusión categorial}
+
+\medskip
+La respuesta intuitiva incorrecta más común es: ``En el punto más alto la velocidad es cero, luego la aceleración también es cero.'' Este razonamiento comete un {\bf error categorial} \cite{Mestre2020}: confunde dos cantidades físicas distintas. La velocidad describe {\it cuánto se desplaza} el proyectil por unidad de tiempo; la aceleración describe {\it cuánto cambia su velocidad} por unidad de tiempo. Que la primera sea nula no impone ninguna condición sobre la segunda. El hecho de que el proyectil esté momentáneamente en reposo no apaga la gravedad. Un objeto puede tener velocidad nula y aceleración distinta de cero simultáneamente; de hecho, el proyectil en su punto más alto tiene exactamente esa condición.
+
+\item[Reflexionar]~
+\begin{itemize}
+    \item {\bf Sobre la estrategia:} La cadena de razonamiento forzó la separación explícita entre {\it estado cinemático} (velocidad) y {\it causa dinámica} (fuerza). Sin esa distinción declarada en el paso 3, el argumento queda incompleto. La verificación 3C+D es la que identifica el eslabón faltante, no la intuición.
+    \item {\bf Sobre la física:} El resultado revela una propiedad fundamental: la aceleración gravitacional es constante a lo largo de toda la trayectoria. Eso es precisamente lo que hace al movimiento parabólico exactamente parabólico. La constancia de $g$ es la misma condición que permite usar las ecuaciones de MUA a lo largo de todo el vuelo.
+    \item {\bf Sobre ti como aprendiz:} La confusión $v = 0 \Rightarrow a = 0$ es una de las más documentadas en la investigación sobre enseñanza de la física \cite{Mestre2020}. ¿Tuviste esa intuición inicial antes de construir el argumento? Si la tuviste: el argumento te dio un contraejemplo construido desde las leyes, no desde la autoridad del libro. Si no la tuviste: ¿puedes anticipar qué otra pregunta activaría el mismo error categorial en ti?
+    \item {\bf Sobre tu desarrollo del criterio:} Un experto reconoce de inmediato que esta pregunta es una trampa conceptual: la formulación está diseñada para activar la intuición incorrecta. Identificar ese patrón (``me están preguntando sobre aceleración pero el enunciado insinúa algo sobre velocidad'') es criterio. ¿Lo detectaste antes de construir el argumento?
+\end{itemize}
+
+\medskip
+\noindent\rule{\linewidth}{0.4pt}
+\noindent\textbf{Horizontes}
+\medskip
+
+\begin{enumerate}
+    \item Si se incluye la resistencia del aire, ¿la aceleración en el punto más alto sería mayor, menor o igual a $g$? ¿En qué dirección apuntaría la aceleración neta? Construye el argumento usando la misma táctica de cinco pasos.
+    \item Una pelota es lanzada verticalmente hacia arriba. En el punto más alto, $v = 0$. ¿Está la pelota en equilibrio estático? Justifica usando la definición precisa de equilibrio en mecánica.
+\end{enumerate}
+
+\end{description}
+\end{enumerate}
+
+\medskip
+\noindent\rule{\linewidth}{0.4pt}
+
+\noindent{\bf Punto de interés: el argumento y la pseudociencia}
+
+\medskip
+La distinción entre ciencia y pseudociencia no es de tema sino de método argumentativo. La homeopatía, por ejemplo, afirma que el agua ``recuerda'' las sustancias con que estuvo en contacto, incluso tras diluciones extremas en las que no queda ninguna molécula del soluto original. Aplica la prueba 3C+D: ¿Es el argumento {\bf completo}: considera lo que ocurre con todas las otras sustancias con que el agua ha estado en contacto? ¿Es {\bf coherente}: qué mecanismo físico permitiría a las moléculas de agua almacenar información sin alterar sus propiedades medibles? ¿Es {\bf consistente} con lo que se sabe sobre la dinámica molecular del agua a temperatura ambiente? ¿Está {\bf deducido} de alguna ley de la física o la química, o simplemente se afirma?
+
+Un argumento que no pasa la prueba 3C+D puede sonar convincente, especialmente si apela a la intuición, a la autoridad o a la experiencia anecdótica. La táctica del Tipo 3 es la defensa: construir cadenas de razonamiento que no den por sentado lo que deben demostrar.
+
+% ═══════════════════════════════════════════════════════════════════════════
+\section{Tipo 4: El análisis experimental --- razonar desde las observaciones}
+% ═══════════════════════════════════════════════════════════════════════════
+
+El análisis experimental invierte la dirección del razonamiento. En el Tipo 2 (problema) se parte de las leyes y se deducen resultados para una situación particular: el movimiento es {\it deductivo}. En el Tipo 4 se parte de observaciones (datos medidos) y se construye, hacia arriba, el modelo que las explica: el movimiento es {\it inductivo}. La meta no es calcular un número a partir de una ley conocida, sino {\bf encontrar la ley} (o verificarla) a partir de lo que el experimento muestra.
+
+Esta inversión cambia el criterio de calidad. El 3C+D sigue vigente, pero la letra D adquiere un significado distinto:
+
+\begin{itemize}
+    \item {\bf Completo:} el análisis considera todos los datos relevantes, sin seleccionar solo los que convienen al modelo propuesto.
+    \item {\bf Coherente:} el argumento va de las observaciones al modelo sin contradicción interna; cada paso sigue del anterior.
+    \item {\bf Consistente:} el modelo propuesto no contradice otras leyes o resultados establecidos de la física.
+    \item {\bf Deducido} de las observaciones: la conclusión se sostiene porque los datos así lo imponen, no porque la ley era conocida de antemano y los datos simplemente ``confirman'' lo que ya se esperaba. Este es el criterio que distingue el análisis honesto de la confirmación sesgada.
+\end{itemize}
+
+\medskip
+La táctica para el análisis experimental tiene cinco pasos:
+
+\begin{enumerate}
+    \item[1.] {\bf Observación.} Describir qué se midió, en qué condiciones, con qué instrumento y con qué resolución. Presentar los datos en una tabla organizada. Cada columna debe indicar la magnitud, el símbolo y la unidad. Este paso es el equivalente experimental de [D]+[R]: los datos son el punto de partida, y la tabla es su representación.
+
+    \item[2.] {\bf Patrón.} Identificar la tendencia cualitativa que muestran los datos. ¿Crece? ¿Decrece? ¿Es monótona? ¿Parece lineal, cuadrática, exponencial? Una gráfica de los datos crudos es la herramienta natural aquí: permite ver el patrón antes de proponer ningún modelo. Un error frecuente es saltar directamente al modelo sin observar el patrón: se pierde la oportunidad de dejar que los datos hablen antes de imponer una forma funcional.
+
+    \figplaceholder[0.90\linewidth]{5.5cm}{fig_Linealizacion_hVst_hVst2}
+
+    \item[3.] {\bf Modelo.} Proponer la relación matemática consistente con el patrón. Si la relación no es lineal, buscar una {\bf linealización}: una transformación de variables que convierta la curva en una recta. Una recta es el modelo más robusto: su pendiente e intercepto tienen significado físico directo y se pueden estimar de forma confiable incluso con pocos datos. La linealización no es un truco algebraico, sino una elección de representación que hace visible la estructura del modelo.
+
+    \item[4.] {\bf Interpretación.} Extraer el significado físico del modelo. ¿Qué representa la pendiente? ¿Qué representa el intercepto? ¿Los valores obtenidos son consistentes con las constantes físicas conocidas? Este paso conecta el modelo matemático con la física: una pendiente sin interpretación es una cifra sin significado.
+
+    \item[5.] {\bf Verificación 3C+D.} Revisar el análisis completo contra los cuatro criterios. ¿Se incluyeron todos los datos? ¿Hay algún punto que se descartó sin justificación? ¿El modelo propuesto contradice alguna ley conocida? ¿La conclusión se sigue de los datos, o se impuso a los datos?
+\end{enumerate}
+
+\medskip
+\noindent{\bf Nota sobre el origen del modelo}
+
+\medskip
+El paso 3 (Modelo) no siempre parte del mismo punto de partida teórico. Conviene distinguir tres situaciones, porque las tres son Tipo~4 y las tres usan la misma táctica de cinco pasos, pero exigen distinta cantidad de trabajo teórico antes de tocar los datos:
+
+\begin{itemize}
+    \item {\bf Teoría completa: verificar y calibrar.} Es el caso del ejemplo que sigue. La forma funcional del modelo se deriva por completo de una ley ya conocida ($h = \tfrac{1}{2}g\,t^2$ sale directamente de la Segunda Ley de Newton aplicada a caída libre) y el experimento cumple un papel de verificación: confirmar que los datos son consistentes con esa forma, y calibrar el único número que faltaba, $g$. La incógnita es un parámetro, no la relación misma.
+
+    \item {\bf Teoría parcial: confirmar la relación.} A veces la teoría disponible no deriva el modelo completo, pero sí restringe su forma. El análisis dimensional aplicado al péndulo simple (sin resolver ninguna ecuación diferencial) predice que el período debe depender de $L$ y $g$ en la combinación $T \propto \sqrt{L/g}$, es decir, $T^2 \propto L$, pero no entrega la constante de proporcionalidad ($4\pi^2/g$, que solo aparece al resolver el modelo dinámico completo para oscilaciones pequeñas). Aquí el experimento tiene dos papeles, no uno: confirmar que la proporcionalidad predicha efectivamente se cumple (graficando $T^2$ vs.\ $L$ y verificando que los puntos caen sobre una recta que pasa por el origen) y revelar el valor de una constante que la teoría, por sí sola, no entregó.
+
+    \item {\bf Sin restricción teórica previa: búsqueda empírica pura.} El caso extremo, no desarrollado en este documento, es cuando ni siquiera el análisis dimensional está disponible, y la única guía para proponer un modelo es el patrón que muestran los datos crudos (paso 2). Así se establecieron históricamente relaciones como la ley de Boyle ($PV=\text{constante}$) o la tercera ley de Kepler ($T^2\propto a^3$), antes de que existiera una teoría (la termodinámica cinética, la gravitación universal) que las explicara.
+\end{itemize}
+
+En los tres casos el razonamiento va siempre de las observaciones hacia el modelo, nunca al revés: eso es lo que define al Tipo~4. Lo que cambia es cuánto del modelo entrega la teoría antes del paso 3, y por lo tanto cuánto queda realmente por descubrir (o por confirmar) en los pasos 3 y 4.
+
+\subsection*{Ejemplo: determinación de $g$ mediante caída libre}
+
+\begin{enumerate}
+\item Un estudiante deja caer una esfera desde distintas alturas y mide el tiempo de caída con un cronómetro fotoeléctrico. Los datos obtenidos son:
+
+\begin{description}
+\item[Pregunta experimental]
+¿Los datos son consistentes con la ley de caída libre $h = \tfrac{1}{2}g\,t^2$? Si es así, ¿qué valor de $g$ se obtiene?
+
+\item[Solución --- Análisis experimental]~
+
+\begin{description}
+    \item[\textbf{1. Observación}]
+    Se midió la altura de caída $\dato{h}$ (con regla graduada, resolución $\pm 0.5\;\text{cm}$) y el tiempo de caída $\dato{\bar{t}}$ (cronómetro fotoeléctrico, resolución $\pm 0.001\;\text{s}$, promedio de tres repeticiones). Los datos se presentan junto con la columna $\dato{\bar{t}^2}$, calculada para la linealización:
+
+    \medskip
+    \begin{center}
+    \small
+    \begin{tabular}{ccc}
+    \hline
+    $\dato{h}$ (m) & $\dato{\bar{t}}$ (s) & $\dato{\bar{t}^2}$ (s$^2$) \\
+    \hline
+    0.50 & 0.319 & 0.102 \\
+    0.75 & 0.391 & 0.153 \\
+    1.00 & 0.451 & 0.203 \\
+    1.25 & 0.504 & 0.254 \\
+    1.50 & 0.552 & 0.305 \\
+    \hline
+    \end{tabular}
+    \end{center}
+
+    \item[\textbf{2. Patrón}]
+    Una gráfica de $h$ vs $\bar{t}$ muestra una curva cóncava hacia arriba: $h$ crece más lentamente que $t$. El crecimiento es claramente no lineal. Una gráfica de $h$ vs $\bar{t}^2$, en cambio, muestra cinco puntos alineados con notable regularidad: el patrón es compatible con una relación lineal entre $h$ y $t^2$.
+
+    \item[\textbf{3. Modelo}]
+    El patrón cuadrático $h \propto t^2$ sugiere el modelo:
+    \begin{align}
+        h &= m \cdot t^2 \tag{M.1}
+    \end{align}
+    donde $m$ es la pendiente de la recta $h$ vs $t^2$. La linealización es directa: se grafican $h$ en el eje vertical y $t^2$ en el horizontal. La relación lineal pasa por el origen si no hay tiempo de reacción ni posición inicial desplazada.
+
+    Estimando la pendiente con el primer y el último dato:
+    \begin{align}
+        \incog{m} &= \frac{\Delta h}{\Delta t^2} = \frac{1.50 - 0.50}{0.305 - 0.102} = \frac{1.00\;\text{m}}{0.203\;\text{s}^2} \approx \incog{4.93\;\text{m/s}^2} \tag{C.1}
+    \end{align}
+
+    \item[\textbf{4. Interpretación}]
+    Comparando \textbf{(M.1)} con la ley de caída libre $h = \tfrac{1}{2}g\,t^2$, se identifica:
+    \[
+        m = \tfrac{1}{2}g \implies \incog{g} = 2m \approx 2 \times 4.93 \approx \incog{9.86\;\text{m/s}^2}
+    \]
+    El valor obtenido es consistente con el valor estándar $g = 9.8\;\text{m/s}^2$ (diferencia $< 1\%$). La pendiente tiene unidades de m/s$^2$: la misma dimensión que una aceleración, lo cual es consistente con la interpretación de $g$ como aceleración gravitacional.
+
+    \item[\textbf{5. Verificación 3C+D}]~
+    \begin{itemize}
+        \item {\bf Completo:} se incluyeron todos los datos de la tabla; ningún punto fue descartado.
+        \item {\bf Coherente:} la cadena observación $\to$ patrón $\to$ linealización $\to$ pendiente $\to$ $g$ no tiene saltos: cada paso justifica el siguiente.
+        \item {\bf Consistente:} el valor $g \approx 9.86\;\text{m/s}^2$ es compatible con el valor tabulado y con la cinemática de MUA que predice exactamente $h = \tfrac{1}{2}g t^2$ para caída libre desde el reposo.
+        \item {\bf Deducido de las observaciones:} $g$ no se tomó de la tabla de constantes: se extrajo de la pendiente de la recta ajustada a los datos. El resultado es independiente del valor conocido; la consistencia con él es una consecuencia, no una premisa.
+    \end{itemize}
+\end{description}
+
+\medskip
+\noindent{\bf Nota sobre la incertidumbre}
+
+\medskip
+La estimación de la pendiente con solo dos puntos extremos es una aproximación. Un análisis completo requeriría la regresión lineal por mínimos cuadrados (que usa todos los puntos) y la propagación de la incertidumbre de cada medición hasta la incertidumbre en $g$. Este tratamiento corresponde al Tipo 5 (Incertidumbre y medición). Lo que el presente análisis establece es la {\it consistencia cualitativa} del modelo y un valor de referencia; la {\it precisión cuantitativa} requiere el tratamiento completo de la incertidumbre.
+
+\item[Reflexionar]~
+\begin{itemize}
+    \item {\bf Sobre la estrategia:} La decisión de graficar $h$ vs $t^2$ en lugar de $h$ vs $t$ no es evidente a priori: requiere reconocer que la ley de caída libre es cuadrática en $t$ y que una linealización hará el patrón más claro y la extracción de $g$ más directa. Este reconocimiento (``busco la transformación que linealiza'') es una táctica de análisis experimental que se transfiere a cualquier relación de potencias.
+    \item {\bf Sobre la física:} La linealización $h = m\,t^2$ pasa por el origen. Si los datos mostraran un intercepto no nulo, habría que investigar su causa: ¿hay un retardo en el disparo del cronómetro? ¿El objeto no parte del reposo? La estructura del modelo hace visibles las fuentes de error sistemático.
+    \item {\bf Sobre ti como aprendiz:} El paso más difícil en el análisis experimental es la {\it lectura} de los datos antes de imponer un modelo, no el cálculo. ¿Miraste la tabla de datos antes de conocer la respuesta esperada? ¿Habrías reconocido el patrón cuadrático sin saber de antemano que era caída libre?
+    \item {\bf Sobre tu desarrollo del criterio:} Un experto ve una tabla $h$ vs $t$ y piensa de inmediato ``necesito graficar vs $t^2$'' porque reconoce el esquema cinemático. Ese reconocimiento instantáneo (antes de hacer ningún cálculo) es criterio experimental. ¿Cuándo tomaste esa decisión en este problema?
+\end{itemize}
+
+\medskip
+\noindent\rule{\linewidth}{0.4pt}
+\noindent\textbf{Horizontes}
+\medskip
+
+\begin{enumerate}
+    \item Si los datos mostraran que la recta $h$ vs $t^2$ no pasa por el origen sino que tiene un intercepto positivo en $t^2$, ¿qué interpretación física tendría ese intercepto? ¿Qué modificación del modelo sería necesaria?
+    \item La estimación de la pendiente con dos puntos extremos es sensible a los errores en esas mediciones particulares. ¿Qué ventaja ofrece la regresión lineal por mínimos cuadrados sobre la estimación de dos puntos? ¿En qué circunstancia ambos métodos darían el mismo resultado?
+\end{enumerate}
+
+\end{description}
+\end{enumerate}
+
+\medskip
+\noindent\rule{\linewidth}{0.4pt}
+
+\noindent{\bf Punto de interés: las observaciones y el terraplanismo}
+
+\medskip
+El análisis experimental exige que la conclusión sea {\bf deducida de las observaciones}, no que las observaciones sean seleccionadas para confirmar una conclusión previa. Esta distinción define la diferencia entre ciencia y confirmación sesgada.
+
+El terraplanismo es un caso instructivo. La curvatura de la Tierra es observable directamente: los barcos desaparecen por el horizonte de proa a popa (no de forma simultánea en todas sus partes), la sombra de la Tierra sobre la Luna durante los eclipses lunares es siempre circular independientemente del ángulo de visión, los satélites de comunicaciones requieren para sus cálculos de órbita un planeta esférico y funcionan con la precisión que ese modelo predice. Cada uno de estos fenómenos es un dato experimental disponible para cualquier ciudadano. Aplicando la prueba 3C+D: ¿un modelo plano de la Tierra es {\bf consistente} con la totalidad de estas observaciones simultáneamente? La respuesta es no. Y eso, no la autoridad de ningún organismo, es lo que descarta el modelo.
+
+El criterio experimental no es ``creerle a los expertos'': es exigir que el modelo propuesto sea consistente con {\it todos} los datos disponibles, no solo con los seleccionados.
+
+% ═══════════════════════════════════════════════════════════════════════════
+\section{Tipo 5: Incertidumbre y medición}
+% ═══════════════════════════════════════════════════════════════════════════
+
+{\small
+\begin{flushright}
+	\zcal
+	``Cualquier medida que toméis sin saber cuál es su imprecisión\\
+	carece de significado.''\\
+	Walter Lewin \cite{Lewin2011}, Introducción.\\
+	{\upshape\small Véase también: \cite{Lewin2011video}}
+\end{flushright}
+}
+
+\medskip
+Toda medición física es imprecisa. Esta afirmación no es una advertencia de precaución: es una propiedad constitutiva de la física experimental. Un resultado sin incertidumbre es, en palabras de Lewin, un resultado sin significado, no simplemente incompleto. Declarar que una longitud mide exactamente $3.00\;m$, sin acompañar ese valor de su incertidumbre, es como afirmar que se conoce una cantidad sin decir con qué resolución se la conoce. La precisión de la afirmación supera la precisión del instrumento: eso es una mentira, aunque sea involuntaria.
+
+La incertidumbre aparece en todos los tipos de tarea anteriores como elemento de contexto: cada dato tiene un valor y una incertidumbre asociada, y cada resultado hereda esa incertidumbre a través de los cálculos. Pero el Tipo 5 designa una clase de tarea donde la incertidumbre es el {\bf tema central}: problemas en los que la pregunta no es qué valor tiene una magnitud, sino {\it con qué precisión puede conocerse}, qué tan significativa es la diferencia entre dos resultados, o cómo debe diseñarse una medición para alcanzar una precisión objetivo.
+
+Esta distinción tiene consecuencias bien más allá del laboratorio. Las tolerancias de manufactura, los intervalos de confianza en farmacología, los márgenes de seguridad en ingeniería estructural, la reproducibilidad de ensayos clínicos: todo esto es propagación de incertidumbre aplicada. Y en la vida pública, el ciudadano que no comprende la incertidumbre es vulnerable a datos manipulados: una encuesta sin margen de error, un promedio sin desviación, un resultado sin intervalo de confianza: todos son información incompleta que puede presentarse como certeza. La incertidumbre es el lenguaje en el que la ciencia confiesa honestamente sus límites, no un simple detalle técnico.
+
+\medskip
+La táctica del Tipo 5 tiene cinco pasos:
+
+\begin{enumerate}
+    \item[1.] {\bf Identificar las magnitudes medidas y sus incertidumbres.} Para cada dato experimental, declarar el valor medido y su incertidumbre. La fuente de la incertidumbre determina cómo estimarla:
+    \begin{itemize}
+        \item {\bf Incertidumbre de instrumento (tipo B):} cuando se hace una sola medición, la incertidumbre se estima como la mitad de la menor división de la escala del instrumento. Un regla milimetrada tiene resolución de $1\;\text{mm}$; la incertidumbre de una lectura es $\pm 0.5\;\text{mm}$.
+        \item {\bf Incertidumbre estadística (tipo A):} cuando se repite la medición $n$ veces, la incertidumbre se estima como la mitad del rango (diferencia entre el valor máximo y el mínimo) o, más rigurosamente, como la desviación estándar del conjunto de mediciones.
+    \end{itemize}
+
+    Cuando el dato proviene de una simulación numérica en vez de una medición directa, existe una tercera fuente de incertidumbre, distinta de los tipos A y B: el error introducido por el propio método numérico (por ejemplo, el paso de tiempo $\Delta t$ en una integración tipo Euler--Cromer), que debe evaluarse por separado del error del instrumento \cite{MaltheSorenssen2015}.
+
+    \item[2.] {\bf Escribir la fórmula de propagación.} La incertidumbre del resultado se obtiene aplicando las reglas de propagación a la fórmula que conecta los datos con la magnitud buscada. Las reglas fundamentales son:
+
+    \medskip
+    \begin{center}
+    \small
+    \begin{tabular}{lll}
+    \hline
+    \textbf{Operación} & \textbf{Fórmula} & \textbf{Propagación} \\
+    \hline
+    Suma o resta      & $z = A \pm B$           & $\Delta z = \Delta A + \Delta B$ \\
+    Producto o cociente & $z = A \cdot B$ o $A/B$ & $\dfrac{\Delta z}{z} = \dfrac{\Delta A}{A} + \dfrac{\Delta B}{B}$ \\[4pt]
+    Potencia          & $z = A^n$               & $\dfrac{\Delta z}{z} = |n|\,\dfrac{\Delta A}{A}$ \\[4pt]
+    \hline
+    \end{tabular}
+    \end{center}
+
+    \medskip
+    Estas reglas corresponden al criterio de {\it peor caso}: suman las incertidumbres en lugar de combinarlas en cuadratura. Para un curso introductorio, dan una cota superior confiable y siempre segura.
+
+    \item[3.] {\bf Calcular la incertidumbre absoluta.} Sustituir los valores numéricos en la fórmula de propagación para obtener $\Delta z$.
+
+    \item[4.] {\bf Expresar el resultado con la notación correcta.} El resultado se escribe como:
+    \[
+        z = (\text{valor} \pm \Delta z)\;\text{unidad}
+    \]
+    La incertidumbre se redondea a {\bf una cifra significativa} (dos solo si la primera es 1). El valor se redondea para que su último decimal coincida con el de la incertidumbre. Un resultado como ``$9.833 \pm 0.136\;\text{m/s}^2$'' debe expresarse como ``$(9.8 \pm 0.1)\;\text{m/s}^2$'': escribir más cifras que las que la incertidumbre justifica es afirmar una precisión inexistente.
+
+    \item[5.] {\bf Interpretar.} ¿Qué porcentaje del valor representa la incertidumbre? ¿Qué magnitud domina la incertidumbre total? ¿El resultado es compatible con el valor de referencia o con la predicción teórica? Dos resultados son {\it compatibles} si la diferencia entre sus valores centrales no excede la suma de sus incertidumbres; son {\it incompatibles} si la diferencia es mayor.
+\end{enumerate}
+
+\subsection*{Ejemplo: incertidumbre en la determinación de $g$}
+
+\begin{enumerate}
+\item Continuando con el experimento del Tipo 4: se toma la medición correspondiente a $h = 1.00\;\text{m}$. El cronómetro fotoeléctrico registró tres tiempos: $0.450\;\text{s}$, $0.451\;\text{s}$ y $0.452\;\text{s}$. La regla tiene resolución de $1\;\text{mm}$. ¿Cuál es el valor de $g$ con su incertidumbre?
+
+\begin{description}
+\item[Problema de incertidumbre]
+Determinar $g = 2h/t^2$ con su incertidumbre a partir de las mediciones anteriores, y verificar si el resultado es compatible con el valor estándar $g_0 = 9.8\;\text{m/s}^2$.
+
+\item[Solución]~
+
+\begin{description}
+    \item[\textbf{1. Magnitudes medidas e incertidumbres}]~
+    \begin{itemize}
+        \item Altura: $\dato{h = 1.000\;\text{m}}$, $\dato{\Delta h = 0.0005\;\text{m}}$ (mitad de la menor división: $0.5\;\text{mm}$).
+        \item Tiempo: promedio $\dato{\bar{t} = 0.451\;\text{s}}$, semirango $\dato{\Delta t = 0.001\;\text{s}}$ (mitad del rango: $(0.452 - 0.450)/2$).
+    \end{itemize}
+
+    \item[\textbf{2. Fórmula de propagación}]
+    La fórmula es $g = 2h/t^2$. El factor 2 es exacto (no tiene incertidumbre). Aplicando las reglas de cociente y potencia:
+    \begin{align}
+        \frac{\Delta g}{g} &= \frac{\Delta h}{h} + \frac{\Delta(t^2)}{t^2} = \frac{\Delta h}{h} + 2\,\frac{\Delta t}{\bar{t}} \tag{P.1}
+    \end{align}
+
+    El tiempo aparece al cuadrado: su incertidumbre relativa se duplica. Esta es la razón por la que el tiempo es la magnitud crítica en este experimento.
+
+    \item[\textbf{3. Cálculo de la incertidumbre}]
+    \begin{align}
+        g &= \frac{2 \times \dato{1.000}}{(\dato{0.451})^2} = \frac{2.000}{0.20340} \approx 9.83\;\text{m/s}^2 \nonumber\\[4pt]
+        \frac{\incog{\Delta g}}{g} &= \frac{\dato{0.0005}}{\dato{1.000}} + 2\,\frac{\dato{0.001}}{\dato{0.451}} = 0.0005 + 0.0044 = 0.0049 \tag{C.1}\\[4pt]
+        \incog{\Delta g} &= 0.0049 \times 9.83 \approx 0.048\;\text{m/s}^2 \nonumber
+    \end{align}
+
+    \item[\textbf{4. Expresión del resultado}]
+    Redondeando la incertidumbre a una cifra significativa: $\Delta g \approx 0.05\;\text{m/s}^2$. El valor se redondea al mismo decimal:
+    \[
+        \incog{g = (9.83 \pm 0.05)\;\text{m/s}^2}
+    \]
+
+    \item[\textbf{5. Interpretación}]
+    La incertidumbre relativa es $\approx 0.5\%$: una medición de buena precisión para un experimento con cronómetro fotoeléctrico. La contribución del tiempo ($0.44\%$) domina sobre la de la altura ($0.05\%$) por un factor 9: invertir en mejorar la medición del tiempo tiene mucho más impacto que mejorar la medición de la altura.
+
+    Comparación con el valor estándar $g_0 = 9.8\;\text{m/s}^2$:
+    \[
+        |g - g_0| = |9.83 - 9.80| = 0.03\;\text{m/s}^2 < \Delta g = 0.05\;\text{m/s}^2
+    \]
+    La diferencia es menor que la incertidumbre: los resultados son {\bf compatibles}. No hay evidencia de un error sistemático detectable con esta precisión.
+\end{description}
+
+\item[Reflexionar]~
+\begin{itemize}
+    \item {\bf Sobre la estrategia:} La propagación reveló que el tiempo domina la incertidumbre total. Esta información no estaba disponible antes de hacer el cálculo: es una consecuencia de la fórmula $g = 2h/t^2$ y de la presencia de $t^2$ (factor 2 en la incertidumbre relativa). Identificar la magnitud dominante es el primer paso para diseñar un experimento más preciso.
+    \item {\bf Sobre la física:} El resultado $(9.83 \pm 0.05)\;\text{m/s}^2$ es una afirmación cuantificada sobre el conocimiento: sabemos que $g$ está entre $9.78$ y $9.88\;\text{m/s}^2$ con la precisión de este experimento. Compararlo con $g_0 = 9.8\;\text{m/s}^2$ no es ``verificar que salió bien'': es establecer que no hay discrepancia detectable, lo cual tiene significado físico propio.
+    \item {\bf Sobre ti como aprendiz:} La incertidumbre no es un símbolo que se agrega al final para cumplir con el formato. ¿Calculaste $\Delta g$ antes de saber si el resultado sería compatible con $g_0$, o dejaste el cálculo para cuando ya sabías que ``salía bien''? La honestidad del análisis se juega exactamente en ese momento.
+    \item {\bf Sobre tu desarrollo del criterio:} Un experto estima mentalmente, antes de calcular, cuál de las magnitudes dominará la incertidumbre. En este caso: $t$ aparece al cuadrado, así que su incertidumbre relativa se duplica al propagarse ($0.44\%$), casi diez veces mayor que la contribución de $h$ ($0.05\%$). ¿Lo anticipaste?
+\end{itemize}
+
+\medskip
+\noindent\rule{\linewidth}{0.4pt}
+\noindent\textbf{Horizontes}
+\medskip
+
+\begin{enumerate}
+    \item Para reducir la incertidumbre en $g$ a la mitad manteniendo el mismo instrumento de tiempo, ¿qué altura de caída sería necesaria? Propaga la incertidumbre en función de $h$ como variable y resuelve para $\Delta g / g = 0.25\%$.
+    \item Si se realizaran 10 mediciones del tiempo de caída en lugar de 3, ¿cómo cambiaría la estimación de $\Delta t$? ¿Qué ventaja tiene aumentar el número de repeticiones frente a usar un instrumento más preciso?
+\end{enumerate}
+
+\end{description}
+\end{enumerate}
+
+\medskip
+\noindent\rule{\linewidth}{0.4pt}
+
+\noindent{\bf Punto de interés: la incertidumbre y la vida pública}
+
+\medskip
+Las reglas del Tipo 5 no se aplican solo en el laboratorio. Una encuesta electoral que reporta ``Candidato A: 48\%, Candidato B: 46\%, margen de error: $\pm 3\%$'' está comunicando exactamente una incertidumbre. Aplicando el criterio de compatibilidad: la diferencia entre los candidatos es $2\%$, que es {\it menor} que el margen de error de $3\%$: los dos resultados son compatibles con que cualquiera de los dos esté adelante, o con que estén empatados. Un titular que diga ``A supera a B'' a partir de esos datos está afirmando más de lo que los datos permiten.
+
+Este error (ignorar la incertidumbre para extraer conclusiones más fuertes de las que los datos justifican) es una de las formas más comunes de desinformación estadística. No requiere falsear los datos: basta con no reportar, no leer o no entender el margen de error. El ciudadano que comprende la incertidumbre puede leer una encuesta, un estudio clínico o un informe económico con la misma disciplina que un físico lee un resultado experimental: buscando no solo el valor central, sino cuánta confianza merece.
+
+% ═══════════════════════════════════════════════════════════════════════════
+\section{Tipo 6: Diseño y síntesis}
+% ═══════════════════════════════════════════════════════════════════════════
+
+{\small
+\begin{flushright}
+	\zcal
+	``Todos diseñan quienes conciben cursos de acción\\
+	dirigidos a cambiar situaciones existentes por otras preferidas.''\\
+	Herbert A. Simon \cite{Simon1996}, Cap.\ 5.
+\end{flushright}
+}
+
+\medskip
+Los cinco tipos anteriores comparten una misma dirección: parten de información dada y exigen deducir o inferir algo a partir de ella: un valor, un argumento, un modelo, una incertidumbre. El Tipo~6 invierte esa dirección. No se entrega la información necesaria para calcular una respuesta: se entrega un {\bf objetivo} (una especificación de desempeño) y la tarea consiste en decidir qué parámetros del sistema, dentro de lo físicamente posible, la alcanzan. No es un problema de análisis disfrazado: es una tarea distinta, con una estructura lógica distinta.
+
+\medskip
+La diferencia más importante, y la que más cuesta asimilar viniendo de los cinco tipos anteriores, es esta: {\bf en general no existe una única respuesta correcta}. Existe una familia de soluciones que satisfacen el objetivo, y una fase adicional (ausente en los Tipos 1--5) que elige una de ellas según un criterio que ya no es puramente físico: costo, disponibilidad de materiales, simplicidad de construcción, margen de seguridad frente a errores. Confundir esta tarea con un ejercicio de despeje (calcular ``el'' valor de la incógnita y detenerse ahí) es no haber entendido su naturaleza. Herbert Simon, quien fundó el estudio sistemático de este tipo de razonamiento, distingue las ciencias naturales, que describen {\it lo que existe}, de las {\bf ciencias de lo artificial}, que se ocupan de {\it lo que debería ser}: de construir artefactos que alcancen metas dentro de las restricciones de un entorno \cite{Simon1996}. La ingeniería es, en este sentido, la disciplina de lo artificial por excelencia; la física introductoria rara vez la ejercita, aunque casi todos los estudiantes de este curso la practicarán en detalle más adelante.
+
+\subsection*{PREDICO en otro orden: de la especificación a los parámetros}
+
+La táctica del Tipo~6 no abandona PREDICO: lo recorre en otro orden, y con otra lectura de cada elemento. Cinco pasos concentran esa diferencia:
+
+\begin{enumerate}
+    \item[1.] {\bf [O] Objetivo, con tolerancia explícita.} A diferencia de los Tipos 1--5, aquí el Objetivo se conoce desde el principio: es el punto de partida, no lo último que se identifica. Y casi nunca es un valor puntual: es un {\it rango} (``corriente entre 10 y 20 mA'', ``período de $2.00\;\text{s}$ con una tolerancia de $\pm 0.05\;\text{s}$''). Esto no es una imprecisión del enunciado: ningún componente real (una resistencia comercial, una cuerda de longitud exacta) alcanza jamás un valor ideal con precisión infinita. Un objetivo sin tolerancia describe una tarea sin solución posible.
+
+    \item[2.] {\bf [D] Datos, en dos categorías.} Los {\bf datos fijos} están impuestos por el entorno (la fuente de alimentación disponible, un componente ya elegido, una norma técnica) y no se negocian. Los {\bf datos de diseño} son los grados de libertad: los parámetros que quien diseña debe decidir. Distinguir unos de otros es, en el Tipo~6, el equivalente de identificar correctamente los Datos en un problema de análisis: un error aquí (tratar como fijo lo que en realidad es negociable, o viceversa) descarrila el resto de la solución.
+
+    \item[3.] {\bf [E] y [C] Ecuaciones y condición despejada para el dato de diseño.} Las ecuaciones relevantes son las mismas leyes físicas de siempre. La diferencia está en qué se despeja: en un problema de análisis, la Condición se despeja para la Incógnita que el enunciado pide; aquí se despeja activamente para el dato de diseño: la variable que se controla, no la que resulta.
+
+    \item[4.] {\bf Familia de soluciones y restricción práctica.} Como el Objetivo llegó con tolerancia, el despeje del paso anterior no entrega un número: entrega un {\it intervalo} de valores válidos para el dato de diseño. Ese intervalo se cruza después con una restricción práctica (los componentes reales existen solo en valores discretos, no en un continuo) para obtener el conjunto final de opciones viables.
+
+    \item[5.] {\bf Elegir y validar.} Entre las opciones viables, se elige una según un criterio adicional (margen de seguridad, costo, simplicidad) y se verifica por sustitución directa que la elección efectivamente cumple el Objetivo dentro de la tolerancia especificada. Esta verificación final cumple el mismo papel que la Fase~D de Pólya en los demás tipos, pero aquí ``revisar'' significa {\it validar}, no recalcular una cuenta.
+\end{enumerate}
+
+\medskip
+\noindent{\bf Nota sobre el dominio del ejemplo.} Los cinco tipos anteriores usan ejemplos de mecánica clásica; este usa un circuito. El cambio no es decorativo: un ejemplo de diseño en mecánica igual de sencillo (p.\ ej.\ un péndulo con período objetivo) tiene un solo parámetro libre ($L$) y, por lo tanto, una única solución numérica: no exhibe la multiplicidad de soluciones válidas que es el punto central de este tipo de tarea. Un circuito resistivo la hace visible de forma barata y concreta: el objetivo llega con tolerancia, el despeje entrega un intervalo, y una restricción práctica real (los valores comerciales de la serie E24) termina de podar ese intervalo a un conjunto finito de opciones.
+
+\subsection*{Ejemplo: resistencia limitadora de corriente para un LED}
+
+\begin{enumerate}
+\item Se dispone de una batería de $9.0\;\text{V}$ y un diodo LED rojo estándar, cuyo voltaje de operación es $2.0\;\text{V}$ y cuya hoja de datos recomienda una corriente directa entre $10\;\text{mA}$ y $20\;\text{mA}$ para un brillo normal sin acortar su vida útil. Se debe elegir una resistencia comercial (serie E24) que, colocada en serie con el LED, mantenga la corriente dentro de ese rango.
+
+\begin{description}
+\item[Problema de diseño]
+Determinar el valor de resistencia $R$ que limita la corriente del circuito al rango $10$--$20\;\text{mA}$, y verificar que la elección final es segura en términos de potencia disipada.
+
+\item[Solución PREDICO invertido]~
+
+\begin{description}
+    \item[\textbf{1. [O] Objetivo}] Corriente directa $\incog{10\;\text{mA} \le I \le 20\;\text{mA}}$: rango, no valor puntual.
+
+    \item[\textbf{2. [D] Datos}]~
+    \begin{itemize}
+        \item Fijos: voltaje de la fuente $\dato{V_S = 9.0\;\text{V}}$; voltaje de operación del LED $\dato{V_{LED} = 2.0\;\text{V}}$.
+        \item De diseño: la resistencia $R$, único grado de libertad del circuito.
+    \end{itemize}
+
+    \item[\textbf{3. [E] y [C]}] Ley de voltajes de Kirchhoff sobre el lazo (fuente, resistencia y LED en serie) y ley de Ohm:
+    \begin{align}
+        V_S &= V_R + V_{LED} \tag{E.1}\\
+        V_R &= I\,R \tag{E.2}
+    \end{align}
+    Combinando y despejando para el dato de diseño:
+    \begin{align}
+        \incog{R} &= \frac{V_S - V_{LED}}{I} \tag{C.1}
+    \end{align}
+
+    \item[\textbf{4. Familia de soluciones}] Sustituyendo los extremos del rango de corriente en \textbf{(C.1)}:
+    \begin{align*}
+        R\big|_{I=20\,\text{mA}} &= \frac{9.0-2.0}{0.020} = 350\;\Omega \\
+        R\big|_{I=10\,\text{mA}} &= \frac{9.0-2.0}{0.010} = 700\;\Omega
+    \end{align*}
+    A mayor $R$, menor corriente: el intervalo válido es $\incog{350\;\Omega \le R \le 700\;\Omega}$. Dentro de la serie comercial E24, varios valores caen en ese intervalo: $360$, $390$, $430$, $470$, $510$, $560$, $620$ y $680\;\Omega$: ocho opciones, todas físicamente correctas.
+
+    \item[\textbf{5. Elegir y validar}] Se elige $\incog{R = 470\;\Omega}$: cercano al centro del intervalo, con margen frente a ambos extremos: ni tan bajo que un error de tolerancia del $5\%$ empuje la corriente sobre $20\;\text{mA}$, ni tan alto que el LED se vea notablemente tenue. Verificación:
+    \[
+        I = \frac{9.0-2.0}{470} \approx 14.9\;\text{mA} \quad \checkmark \quad \text{dentro de } [10,20]\;\text{mA}
+    \]
+    Potencia disipada en la resistencia: $P = I^2 R \approx (0.0149)^2 \times 470 \approx 0.10\;\text{W}$. Una resistencia comercial de $\tfrac{1}{4}\;\text{W}$ ($0.25\;\text{W}$) tiene margen suficiente; una de $\tfrac{1}{8}\;\text{W}$ ($0.125\;\text{W}$) quedaría peligrosamente cerca del límite.
+\end{description}
+
+\item[Reflexionar]~
+\begin{itemize}
+    \item {\bf Sobre la estrategia:} A diferencia de los Tipos 1--5, aquí ``verificar el resultado'' no es comparar con un único valor esperado: es comprobar que la solución elegida cae dentro de un rango válido. La tolerancia del Objetivo se propaga hasta el final; nunca se colapsa en un número.
+    \item {\bf Sobre la física:} La ley de Ohm y una ecuación de malla bastan: la física en juego es elemental. La dificultad no está ahí: está en reconocer que el problema está subdeterminado, y en que esa indeterminación no es un defecto del planteamiento, sino su naturaleza.
+    \item {\bf Sobre ti como aprendiz:} ¿Calculaste el intervalo completo $[350,700]\;\Omega$ antes de elegir un valor, o resolviste directamente para el punto medio del rango de corriente y te detuviste ahí? La primera opción muestra el espacio de soluciones completo; la segunda lo oculta, aunque la respuesta puntual también sea correcta.
+    \item {\bf Sobre tu desarrollo del criterio:} Quien tiene experiencia reconoce, antes de calcular, que un LED estándar alimentado desde una fuente de unos $9\;\text{V}$ va a necesitar una resistencia del orden de cientos de ohmios (ni de $10\;\Omega$ ni de $10\,000\;\Omega$) y usa el cálculo solo para precisar ese rango ya anticipado, no para descubrirlo desde cero.
+\end{itemize}
+
+\medskip
+\noindent\rule{\linewidth}{0.4pt}
+\noindent\textbf{Horizontes}
+\medskip
+
+\begin{enumerate}
+    \item Si en vez de un LED se deben alimentar tres LEDs idénticos en serie desde la misma fuente de $9.0\;\text{V}$, ¿sigue siendo viable el diseño? Replantea el Objetivo y las Condiciones para ese caso.
+    \item La batería se descarga con el uso: su voltaje real puede caer hasta $7.5\;\text{V}$ antes de reemplazarse. Con $R = 470\;\Omega$ fijo, ¿la corriente en ese caso extremo sigue dentro del rango tolerado por el LED? Diseñar considerando el {\it peor caso}, y no solo el caso nominal, es una práctica estándar de ingeniería que ningún problema de análisis (con sus datos fijos de antemano) exige entrenar.
+\end{enumerate}
+
+\end{description}
+\end{enumerate}
+
+\medskip
+\noindent\rule{\linewidth}{0.4pt}
+
+\noindent{\bf Punto de interés: satisfacer, no optimizar}
+
+\medskip
+Entre $350$ y $700\;\Omega$, ninguna resistencia es ``la'' solución en un sentido absoluto: todas satisfacen el objetivo. Simon acuñó el término {\it satisficing} (de {\it satisfy} y {\it suffice}) para nombrar exactamente esta situación: buscar una solución suficientemente buena dentro de las restricciones reales, en vez de una óptima en abstracto \cite{Simon1996}. En física introductoria, donde casi toda tarea tiene una única respuesta correcta y el criterio de éxito es acercarse a ella, esta idea puede sonar como una concesión a la imprecisión. No lo es: es el reconocimiento honesto de que, fuera del salón de clase, la mayoría de los problemas que vale la pena resolver (diseñar, no solo calcular) no tienen una única respuesta esperando ser encontrada, sino un espacio de respuestas válidas esperando ser comparadas con criterio.
+
+% ═══════════════════════════════════════════════════════════════════════════
+\section*{Para cerrar: del andamiaje al criterio}
+% ═══════════════════════════════════════════════════════════════════════════
+
+Los seis tipos de tarea descritos en estas notas no son seis procedimientos independientes. Son seis ángulos desde los cuales la misma actividad (pensar físicamente) se puede practicar y evaluar. La siguiente tabla los reúne:
+
+\medskip
+\begin{center}
+\footnotesize
+\begin{tabular}{>{\raggedright\arraybackslash}p{1.9cm}>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}p{4.4cm}>{\raggedright\arraybackslash}p{4.2cm}}
+\hline
+\textbf{Tipo} & \textbf{Dirección del razonamiento} & \textbf{Criterio de calidad} & \textbf{Táctica} \\
+\hline
+1 --- Ejercicio          & Deductivo, automatizado     & Estructura tácita completa          & PREDICO tácito \\
+2 --- Problema           & Deductivo, explícito        & PREDICO + 4 fases                   & PREDICO \\
+3 --- Preg.\ conceptual  & Deductivo, argumentativo    & 3C+D (deducido de las leyes)        & Situación $\to$ Cadena $\to$ Verificación \\
+4 --- Análisis exp.      & Inductivo                   & 3C+D (deducido de las observaciones)& Observación $\to$ Modelo $\to$ Verificación \\
+5 --- Incertidumbre      & Cuantificación del conocimiento & Resultado $\pm$ incertidumbre   & Propagación $\to$ Expresión $\to$ Interpretación \\
+6 --- Diseño y síntesis  & Constructivo (de objetivo a parámetros) & Objetivo alcanzado dentro de tolerancia & PREDICO invertido $\to$ Familia de soluciones $\to$ Elegir y validar \\
+\hline
+\end{tabular}
+\end{center}
+
+\medskip
+Los tipos no son niveles de dificultad creciente ni etapas de una secuencia obligatoria. Son formas complementarias de entrenamiento. El Tipo 1 automatiza la estructura hasta que su uso sea casi inconsciente; el Tipo 2 la despliega con toda la profundidad que un problema nuevo exige; el Tipo 3 traslada esa misma disciplina al plano del argumento verbal, donde no hay números que oculten un razonamiento incompleto; el Tipo 4 invierte la dirección y entrena la lectura crítica de la evidencia; el Tipo 5 enseña a cuantificar exactamente cuánto se sabe (y cuánto no); el Tipo 6 invierte la pregunta misma: en vez de partir de datos hacia una respuesta, parte de un objetivo hacia los datos que hay que decidir, y entrena un juicio que los cinco anteriores no ejercitan: comparar soluciones válidas, no solo encontrar una.
+
+Practicarlos juntos, con regularidad, sobre problemas variados, construye algo que ninguno de ellos produce por separado: el {\bf criterio}. Esa capacidad de mirar una situación física (o una afirmación sobre el mundo) y tener un juicio confiable sobre su estructura antes de hacer ningún cálculo. El criterio no se enseña directamente: se acumula, problema a problema, reflexión a reflexión, error identificado a error identificado. Las tácticas son el andamiaje; el criterio es la estructura que queda cuando el andamiaje ya no hace falta.
+
+\medskip
+\noindent\rule{\linewidth}{0.4pt}
+
+\noindent{\bf Punto de interés: PREDICO frente a la atención fragmentada}
+
+\medskip
+Estas notas no se proponen resolver la crisis contemporánea de la atención (ese no es su objetivo, y sería pretencioso afirmarlo), pero vale la pena señalar que la enfrentan de manera casi incidental. La investigación reciente es clara sobre el problema: cambiar de tarea constantemente deja un ``residuo de atención'' que degrada el desempeño en la tarea siguiente \cite{Newport2016}; las plataformas digitales están diseñadas deliberadamente con refuerzo intermitente (el mismo mecanismo de las máquinas tragamonedas) para maximizar el tiempo de uso a costa de la capacidad de concentrarse \cite{Newport2019}; y la exposición intensiva durante la adolescencia, un período de particular plasticidad neuronal, se asocia con fragmentación de la atención y peores resultados de salud mental \cite{Haidt2024}.
+
+PREDICO exige exactamente la disciplina opuesta: sostener la atención en un mismo problema a través de siete elementos y cuatro fases, sin recompensa intermedia hasta que el problema esté resuelto. La ``dificultad deseable'' que ya se citó \cite{Bjork2011} no es más que la contraparte académica de lo que esta literatura llama {\it trabajo profundo}. Las ``zonas de resistencia'' que Reflexionar pide nombrar son, sin usar el término, un ejercicio de mentalidad de crecimiento: tratar la dificultad como información sobre dónde crecer, no como veredicto sobre quién se es \cite{Dweck2006}. Y el ``encanto del descubrimiento'' de Pólya, citado desde la primera página de estas notas, es precisamente el tipo de recompensa (tardía, ganada, genuina) que compite con la recompensa inmediata y vacía de una notificación. Sostener una pasión el tiempo suficiente para que produzca algo requiere, según la evidencia, menos un talento especial que una jerarquía de metas coherente y la disposición a persistir cuando la tarea deja de ser interesante a primera vista \cite{Duckworth2016}. Resolver problemas de física, practicado con regularidad, es una forma barata y accesible de ejercitar precisamente eso.
+
+\medskip
+\noindent{\bf El regreso a Sagan}
+
+\medskip
+En la introducción se citó a Carl Sagan describiendo una sociedad que construyó su mundo sobre la ciencia y la tecnología sin que casi nadie comprenda cómo funcionan. La advertencia no apuntaba a la ignorancia de los contenidos (las fórmulas, las constantes, los experimentos), sino a la ignorancia del {\it método}: cómo se construye un argumento que resista la crítica, cómo se lee la evidencia sin seleccionarla para confirmar lo que ya se creía, cómo se distingue lo que se sabe con precisión de lo que apenas se sospecha.
+
+Esos hábitos tienen nombres en estas notas. La exigencia de que un argumento sea Completo, Coherente, Consistente y Deducido (ya sea de las leyes o de las observaciones) es exactamente la vacuna que Sagan recetaba contra el pensamiento mágico, el charlatán y el dato manipulado. El criterio de compatibilidad del Tipo 5 es la herramienta para leer una encuesta, un estudio clínico o un informe de política pública sin dejarse engañar por un promedio sin desviación o una diferencia sin margen de error. La cadena de razonamiento del Tipo 3 es el antídoto contra el salto lógico disfrazado de evidencia.
+
+La solución de problemas de Física no es una habilidad técnica encapsulada en un curso. Es el entrenamiento de una forma de pensar que tiene consecuencias bien más allá del salón de clase. Pólya \cite{Polya1945} lo sabía cuando escribió que resolver un problema modesto (con los propios medios, con la propia curiosidad) produce el mismo encanto del descubrimiento y el goce del triunfo que resolver uno grande. Sagan lo sabía cuando insistía en que la ciencia no es un cuerpo de conocimientos sino una forma de pensar.
+
+Estas notas son un intento de hacer esa forma de pensar explícita, practicable y transferible.
+\newpage
+
+% ═══════════════════════════════════════════════════════════════════════════
+\section*{Ficha PREDICO: plantilla de trabajo}
+% ═══════════════════════════════════════════════════════════════════════════
+
+\noindent\small Imprime esta página, o complétala en tableta, cada vez que enfrentes un ejercicio o un problema (Tipos~1 y~2). No es una hoja más de tarea: es el mismo esquema que se explicó en la Sección~2, convertido en formato de trabajo.
+
+\vspace{2mm}
+\noindent\textbf{Problema:}\ \hrulefill \hfill \textbf{Fecha:}\ \hrulefill
+
+\vspace{3mm}
+\noindent{\bf [P] Parafraseo}\\
+\rule{\linewidth}{0.3pt}\\[4mm]
+\rule{\linewidth}{0.3pt}
+
+\vspace{3mm}
+\noindent{\bf [R] Representación} --- dibuja el diagrama (de estados o de cuerpo libre) y marca el sistema de referencia (ejes y cronómetro):
+\vspace{1mm}
+\begin{center}\fbox{\begin{minipage}[c][3.4cm][c]{0.94\linewidth}\hfill\end{minipage}}\end{center}
+
+\vspace{2mm}
+\noindent{\bf [E] Ecuaciones relevantes} (principio físico y por qué aplica aquí):\\
+\rule{\linewidth}{0.3pt}
+
+\vspace{3mm}
+\noindent
+\begin{minipage}[t]{0.48\linewidth}
+\dato{\bf [D] Datos}\\[1mm]
+\begin{tabular}{|p{1.5cm}|p{1.7cm}|p{1.5cm}|}
+\hline
+\centering Símbolo & \centering Valor & \centering\arraybackslash Unidad\\\hline
+ & & \\\hline
+ & & \\\hline
+ & & \\\hline
+\end{tabular}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\linewidth}
+\incog{\bf [I] Incógnitas}\\[1mm]
+\begin{tabular}{|p{1.5cm}|p{3.4cm}|}
+\hline
+\centering Símbolo & \centering\arraybackslash ¿Qué representa?\\\hline
+ & \\\hline
+ & \\\hline
+\end{tabular}
+\end{minipage}
+
+\vspace{3mm}
+\noindent\cond{\bf [C] Condiciones} (ecuación que conecta datos con incógnitas):\\
+\rule{\linewidth}{0.3pt}\\[4mm]
+\rule{\linewidth}{0.3pt}
+
+\vspace{2mm}
+\noindent{\bf [O] Objetivo} (qué pide exactamente el enunciado, con sus unidades):\\
+\rule{\linewidth}{0.3pt}
+
+\vspace{3mm}
+\noindent\rule{\linewidth}{0.5pt}
+
+\vspace{2mm}
+\noindent{\bf Fase C --- Ejecutar} (despeje simbólico antes de sustituir números):
+\begin{center}\fbox{\begin{minipage}[c][2.6cm][c]{0.94\linewidth}\hfill\end{minipage}}\end{center}
+
+\vspace{1mm}
+\noindent{\bf Fase D --- Revisar} (marca lo que verificaste):\\
+$\square$ Unidades consistentes \quad
+$\square$ Casos límite razonables \quad
+$\square$ Orden de magnitud razonable\\
+$\square$ Signo coherente con el sistema de referencia \quad
+$\square$ Comparación con un valor conocido o estimado
+
+\vspace{2mm}
+\noindent{\bf Horizontes} (una pregunta abierta que este problema deja sin responder):\\
+\rule{\linewidth}{0.3pt}
+\normalsize
+\newpage
+
+\bibliography{referencias}
+\bibliographystyle{apacite}
+\end{document}
