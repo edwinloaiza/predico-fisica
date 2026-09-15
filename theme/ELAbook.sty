@@ -1,0 +1,169 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{ELAbook}[2026/09/15 Estilo ELA para libros y manuales (clase book/report, motor pdflatex)]
+
+% =============================================================================
+% ELAbook.sty — estilo compartido para libros/manuales de curso
+% =============================================================================
+% Origen: extraído verbatim de Notas_Fisica_I/preamble.tex (FisicaI+Lab), que
+% construyó este sistema de forma independiente de ELAarticle.sty. Promovido
+% a estándar compartido el 2026-09-15 por decisión de Edwin ("quiero que el
+% nuevo estándar sea el que llevamos en las notas") — los nombres de macro NO
+% se cambiaron a la convención ELA* para no romper el libro ya escrito
+% (Notas_Fisica_I/Main.pdf, 84 páginas al momento de esta extracción).
+%
+% Nota de compatibilidad: este archivo compila con pdflatex (fuentes Computer
+% Modern estándar) — a diferencia de ELAarticle.sty, que requiere XeLaTeX/
+% LuaLaTeX + fontspec (Fira Sans/Math/Mono). No se unificaron los dos motores
+% todavía; es una divergencia real entre los dos temas, no un descuido.
+%
+% Requiere una clase de documento con \chapter (book o report) — el título de
+% capítulo (Sección 08 abajo) usa \titleformat{\chapter}.
+%
+% Antes de \usepackage{ELAbook}, el documento que lo usa debe definir
+% \ProjectTitle y \AuthorShort (p. ej. en su propio config.tex) — el pie de
+% página (Sección 03) los usa.
+
+% --- 01. Paquetes base ------------------------------------------------------
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[spanish]{babel}
+\RequirePackage{amsmath}
+\RequirePackage{amssymb}
+\RequirePackage{mathtools}
+\RequirePackage{graphicx}
+\RequirePackage{float}
+\RequirePackage{caption}
+\RequirePackage{subcaption}
+\RequirePackage{tikz}
+\RequirePackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue
+}
+\RequirePackage{booktabs}
+\RequirePackage{array}
+\RequirePackage{enumitem}
+\RequirePackage[colorinlistoftodos]{todonotes}
+\RequirePackage{xcolor}
+\RequirePackage{setspace}
+\onehalfspacing
+
+% --- 02. Geometría de página -------------------------------------------------
+% Pensado para PANTALLA (laptop/tablet), no para imprenta: ancho de texto más
+% angosto que el margin=1in por defecto, para una línea de lectura cómoda
+% (~68-72 caracteres), centrado en la página — no simétrico impar/par (eso es
+% para libros encuadernados físicos, aquí no aplica).
+\RequirePackage{geometry}
+\geometry{
+  paperwidth=8.5in, paperheight=11in,
+  textwidth=5.7in,
+  top=0.9in, bottom=0.9in,
+  marginparwidth=0in, marginparsep=0pt,
+  centering
+}
+
+% --- 03. Encabezado y pie de página estilo libro ----------------------------
+% Pie de página "Título. Por Autor." a la izquierda, número de página a la
+% derecha (como el "Cuaderno de Física. By Edwin Loaiza A." del formato de
+% referencia). Requiere \ProjectTitle y \AuthorShort ya definidos.
+\RequirePackage{fancyhdr}
+\setlength{\headheight}{14.5pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[RE]{\leftmark}
+\fancyhead[LO]{\rightmark}
+\fancyheadoffset{0pt}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyfoot[L]{\footnotesize\itshape \ProjectTitle. Por \AuthorShort}
+\fancyfoot[R]{\thepage}
+
+% --- 04. Enlaces por tipo de recurso ----------------------------------------
+% Documento nativo-digital, no de imprenta: se apoya en hipervínculos reales
+% (video, guía de laboratorio, lectura con Hypothesis). Cada tipo de recurso
+% lleva su propio color + etiqueta, para que un enlace se reconozca de un
+% vistazo (qué es, antes de hacer clic) en vez de verse como texto azul
+% genérico.
+\definecolor{colorvideo}{rgb}{0.72, 0.11, 0.11}      % rojo — video (YouTube)
+\definecolor{colorlectura}{rgb}{0.05, 0.35, 0.60}    % azul — lectura/Hypothesis
+\definecolor{colorlab}{rgb}{0.13, 0.45, 0.13}        % verde — laboratorio
+
+% \Video{Texto del video}{URL} — símbolo $\blacktriangleright$ (amssymb) en
+% vez de un emoji Unicode crudo — pdflatex sin fontenc/pifont no lo renderiza
+% y rompe la compilación. Sin la palabra "Video:" — el ícono ya lo dice.
+\newcommand{\Video}[2]{%
+  \textbf{\textcolor{colorvideo}{$\blacktriangleright$}}~\href{#2}{#1}%
+}
+
+% \Lectura{Texto}{URL} — lectura externa o documento con Hypothesis
+\newcommand{\Lectura}[2]{%
+  \textbf{\textcolor{colorlectura}{Lectura:}} \href{#2}{#1}%
+}
+
+% \Laboratorio{Texto}{URL} — guía de laboratorio
+\newcommand{\Laboratorio}[2]{%
+  \textbf{\textcolor{colorlab}{Laboratorio:}} \href{#2}{#1}%
+}
+
+% --- 05. Entornos numerados: pregunta / ejercicio / problema ----------------
+% Tres niveles de dificultad:
+%   - pregunta:  conceptual, sin cálculo — "explica/justifica"
+%   - ejercicio: aplicación directa de una fórmula/método ya mostrado
+%   - problema:  contexto rico, multi-paso, sin variable pre-etiquetada
+% Numeración automática por sección (p. ej. "Ejercicio 1.2.3"), referenciable
+% con \label{ejercicio:...}/\ref{...}. Cada entorno acepta un título opcional:
+% \begin{ejercicio}[Unidades derivadas].
+\RequirePackage{amsthm}
+\theoremstyle{definition}
+\newtheorem{pregunta}{Pregunta}[section]
+\newtheorem{ejercicio}{Ejercicio}[section]
+\newtheorem{problema}{Problema}[section]
+
+% --- 06. Caja "Ejemplo" (tcolorbox, numerada por sección, referenciable) ----
+% Estilo inspirado en el "Cuaderno de Física" (WILEYSEV.cls, Edwin 2011) pero
+% reconstruido con macros propias — sin depender de esa clase (tiene copyright
+% de TeXnology Inc./Wiley).
+\RequirePackage[most]{tcolorbox}
+\tcbuselibrary{theorems}
+\newtcbtheorem[number within=section]{ejemplo}{Ejemplo}%
+  {colback=black!5, colframe=black!45, fonttitle=\bfseries,
+   coltitle=black, colbacktitle=black!12,
+   boxrule=0.4pt, arc=1pt, left=6pt, right=6pt, top=4pt, bottom=4pt,
+   breakable}{ej}
+% Uso: \begin{ejemplo}{Título opcional}{u1s1-1} ... \end{ejemplo}
+% Numera "Ejemplo 1.1.1", label automático ej:u1s1-1 (tercer argumento).
+
+% --- 07. Caja "Para profundizar" --------------------------------------------
+% Marca visualmente contenido opcional/contextual (historia detallada,
+% procedimientos técnicos, trivia) para que el lector decida conscientemente
+% si quiere profundizar o seguir directo a lo esencial. No recorta contenido,
+% solo lo señaliza. No numerada (no es un elemento citable como \ejemplo).
+% Reusa colorlectura para consistencia visual con el resto del sistema.
+\newtcolorbox{profundiza}[1][Para profundizar]{
+  colback=colorlectura!5, colframe=colorlectura!70!black,
+  fonttitle=\bfseries, coltitle=white, colbacktitle=colorlectura!70!black,
+  boxrule=0.4pt, arc=1pt, left=6pt, right=6pt, top=4pt, bottom=4pt,
+  breakable, title=#1
+}
+
+% --- 08. Epígrafe de apertura de capítulo -----------------------------------
+% \CapituloEpigrafe{cita}{autor} — párrafo en itálica, alineado a la derecha,
+% con el autor debajo en versalita. Se usa justo después de \chapter{...}.
+\newcommand{\CapituloEpigrafe}[2]{%
+  \begin{flushright}
+  \begin{minipage}{0.75\textwidth}
+  \raggedleft\itshape #1\par
+  \upshape\MakeUppercase{#2}
+  \end{minipage}
+  \end{flushright}
+  \bigskip
+}
+
+% --- 09. Título de capítulo estilo "CAPÍTULO N" + regla gruesa -------------
+\RequirePackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries}
+  {\Large\MakeUppercase{\chaptertitlename}~\thechapter}
+  {10pt}
+  {{\titlerule[1.2pt]}\vspace{8pt}\Huge}
+  [\vspace{4pt}{\titlerule[0.5pt]}]

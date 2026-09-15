@@ -1,11 +1,27 @@
 
-\documentclass[8pt]{article}
-\input{theme/pdoc}
-% xcolor ya cargado por pdoc.tex con opción [table]
-\usepackage{enumerate}
-\usepackage{tikz}
+\documentclass[11pt]{book}
+% Estilo compartido con Notas_Fisica_I (decisión de Edwin, 2026-09-15): mismos
+% colores, mismos entornos, mismo título de capítulo. Fuente canónica en
+% course-authoring-kit/theme-latex/ela-theme/ELAbook.sty — esta es una copia
+% vendida (theme/ELAbook.sty) para que este repositorio público compile solo,
+% sin depender de una ruta fuera del repo. Si ELAbook.sty cambia en
+% course-authoring-kit, hay que volver a copiarlo aquí antes de recompilar.
+\usepackage{theme/ELAbook}
+% Con un solo capítulo, \thesection vuelve a numerarse como en la versión
+% article (1, 2, 3...) en vez de "1.1, 1.2..." con prefijo de capítulo — así
+% las referencias ya escritas en el texto ("Sección~2", etc.) siguen siendo
+% correctas sin tener que revisarlas una por una.
+\renewcommand{\thesection}{\arabic{section}}
+% \usepackage{enumerate} eliminado: choca con enumitem (ya cargado por
+% ELAbook.sty) — mismo mecanismo de [label=...], paquetes incompatibles entre
+% sí. enumitem cubre el mismo caso de uso.
 \usetikzlibrary{shapes.geometric,arrows.meta,positioning}
 \graphicspath{ {./Imagenes/} {./Imagenes/logos/}{./Imagenes/banner/}{./Figuras/}}
+\usepackage{apacite}
+
+% El pie de página de ELAbook.sty usa \ProjectTitle y \AuthorShort.
+\newcommand{\ProjectTitle}{PREDICO}
+\newcommand{\AuthorShort}{Edwin Loaiza A.}
 
 %% ─── Control de figuras ────────────────────────────────────────────────────
 %% Cambiar \figurasfalse → \figurastrue cuando las figuras estén disponibles.
@@ -36,11 +52,13 @@
 \newcommand{\cond}[1]{\textcolor{colCond}{#1}}
 
 %% ─── TODO ───────────────────────────────────────────────────────────────────
-%% Mismo patrón que en tus otros documentos (p.ej. paperv1.tex, quantum_light_notes.tex):
-%% comando simple, sin depender del paquete todonotes.
-\newcommand{\todo}[1]{\textcolor{orange}{[\textbf{TODO:} #1]}}
+%% ELAbook.sty ya carga todonotes (para \listoftodos), que define su propio
+%% \todo (nota al margen) — se redefine aquí con \renewcommand para conservar
+%% el comportamiento simple original (etiqueta inline, sin nota al margen).
+\renewcommand{\todo}[1]{\textcolor{orange}{[\textbf{TODO:} #1]}}
 
 \begin{document}
+\frontmatter
 \input{encabezado}
 \centerline{\Large La solución de problemas en Física como forma de pensar}
 \centerline{\large Estrategia, táctica y criterio}
@@ -52,13 +70,21 @@
 {\small\tableofcontents}
 \newpage
 
+\mainmatter
+\chapter{PREDICO: la solución de problemas en física}
+\label{ch:predico}
+\CapituloEpigrafe{Un gran descubrimiento resuelve un gran problema, pero en la solución de todo
+problema hay un cierto descubrimiento. El problema que se plantea puede ser modesto; pero si pone a
+prueba la curiosidad que induce a poner en juego todas las facultades inventivas, si se resuelve
+por métodos propios, se puede experimentar el encanto del descubrimiento y el goce del
+triunfo.\ \cite{Polya1945}, Prefacio.}{George Pólya}
+
 % ═══════════════════════════════════════════════════════════════════════════
 \section*{Introducción}
 % ═══════════════════════════════════════════════════════════════════════════
 
 {\small
 \begin{flushright}
-	\zcal
 	``
 	{\it La ciencia es un modo de pensar} mucho más que un conjunto de conocimientos.\\
 	Su objetivo es averiguar cómo funciona el mundo, buscar qué regularidades puede haber,\\
@@ -134,22 +160,8 @@ Ninguna de estas preguntas busca, en el fondo, una respuesta correcta y ya: busc
 % ═══════════════════════════════════════════════════════════════════════════
 \section{Solución de problemas}
 % ═══════════════════════════════════════════════════════════════════════════
-
-{\small
-\begin{flushright}
-	\zcal
- ``
- Un gran descubrimiento resuelve un gran problema, pero en la solución de todo problema, \\
-  hay un cierto descubrimiento. El problema que se plantea puede ser modesto;  \\
-  pero si  pone a prueba la curiosidad que induce a poner en juego todas\\
-  las facultades inventivas, si se resuelve por métodos propios,\\
-  se puede experimentar el encanto del descubrimiento\\
-  y el goce del triunfo.
- ''\\
-G. Pólya \cite{Polya1945}, Prefacio.
-\end{flushright}
-}
-% ═══════════════════════════════════════════════════════════════════════════
+% (El epígrafe de Pólya que abría esta sección ahora vive en \CapituloEpigrafe,
+% justo después de \chapter{...} — no se repite aquí.)
 
 {\it La solución de problemas} es una de las actividades más utilizadas para evaluar el nivel de comprensión de {\it contenidos conceptuales} y {\it contenidos procedimentales}, tanto en educación superior como en la básica.
 
@@ -1173,7 +1185,6 @@ El criterio experimental no es ``creerle a los expertos'': es exigir que el mode
 
 {\small
 \begin{flushright}
-	\zcal
 	``Cualquier medida que toméis sin saber cuál es su imprecisión\\
 	carece de significado.''\\
 	Walter Lewin \cite{Lewin2011}, Introducción.\\
@@ -1316,7 +1327,6 @@ Este error (ignorar la incertidumbre para extraer conclusiones más fuertes de l
 
 {\small
 \begin{flushright}
-	\zcal
 	``Todos diseñan quienes conciben cursos de acción\\
 	dirigidos a cambiar situaciones existentes por otras preferidas.''\\
 	Herbert A. Simon \cite{Simon1996}, Cap.\ 5.

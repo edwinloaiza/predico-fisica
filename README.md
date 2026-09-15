@@ -20,3 +20,10 @@ pdflatex Solucion_de_Problemas_PREDICO_Estudiante.tex
 ```
 
 El PDF ya compilado (`Solucion_de_Problemas_PREDICO_Estudiante.pdf`) está incluido en el repositorio.
+
+## Estilo
+
+Usa `theme/ELAbook.sty`, el mismo estilo visual (capítulos, colores, entornos) que las Notas de
+Física I del autor — capítulo único, sin recortar contenido. Este archivo es una copia vendida
+(el original vive en un repositorio privado de estilo compartido); si el estilo cambia ahí, hay
+que volver a copiarlo aquí antes de recompilar y publicar.
