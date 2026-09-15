@@ -230,6 +230,11 @@ Un problema de diseño no entrega los datos: pide construir el sistema que los p
 
 \bigskip
 \begin{center}
+% \resizebox agregado al migrar a ELAbook.sty (textwidth más angosto, fuente
+% 11pt en vez de 8pt) — el árbol de decisión, ya aprobado por Antigravity en
+% Mensaje056, se salía 68pt del margen sin esto. Escala uniforme, mismo
+% contenido/nodos/lógica, solo más pequeño para caber en la página.
+\resizebox{\linewidth}{!}{%
 \begin{tikzpicture}[
   decision/.style={diamond, aspect=2.6, draw, thick, fill=blue!4, text width=3.7cm, text centered, inner sep=1.5pt, font=\scriptsize},
   outcome/.style={rectangle, rounded corners, draw, thick, text width=3.3cm, text centered, inner sep=3pt, font=\scriptsize\bfseries},
@@ -263,7 +268,8 @@ Un problema de diseño no entrega los datos: pide construir el sistema que los p
 
 \node[outcome, fill=blue!12, below=of q4] (t2) {[2] Problema};
 \draw[arr] (q4) -- node[lbl] {No} (t2);
-\end{tikzpicture}
+\end{tikzpicture}%
+}
 \end{center}
 
 Cada tipo demanda una táctica específica. Los seis se desarrollan en las secciones siguientes.
